@@ -1,25 +1,42 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from "react";
+import "./App.scss";
+import Home from "./containers/home";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import Login from "./containers/login";
+import { JWT_TOKEN_STORAGE } from "./constants/user";
+import { ChakraProvider } from "@chakra-ui/react";
+import SignUp from "./containers/signup";
+import { PATH } from "./constants/user/path";
+
+const router = createBrowserRouter([
+  {
+    path: PATH.Home,
+    element: <Home />,
+  },
+  {
+    path: PATH.Login,
+    element: <Login />,
+  },
+  {
+    path: PATH.SignUp,
+    element: <SignUp />,
+  },
+]);
 
 function App() {
+  const [token, setToken] = useState<string>("");
+
+  useEffect(() => {
+    if (window.localStorage.getItem(JWT_TOKEN_STORAGE))
+      setToken(window.localStorage.getItem(JWT_TOKEN_STORAGE) ?? "");
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ChakraProvider>
+      <div className="App">
+        {token ? <RouterProvider router={router} /> : <Login />}
+      </div>
+    </ChakraProvider>
   );
 }
 

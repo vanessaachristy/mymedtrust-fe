@@ -6,7 +6,8 @@ import Login from "./containers/login";
 import { JWT_TOKEN_STORAGE } from "./constants/user";
 import { ChakraProvider } from "@chakra-ui/react";
 import SignUp from "./containers/signup";
-import { PATH } from "./constants/user/path";
+import { PATH } from "./constants/path";
+import { QueryClient, QueryClientProvider } from "react-query";
 
 const router = createBrowserRouter([
   {
@@ -25,6 +26,7 @@ const router = createBrowserRouter([
 
 function App() {
   const [token, setToken] = useState<string>("");
+  const queryClient = new QueryClient();
 
   useEffect(() => {
     if (window.localStorage.getItem(JWT_TOKEN_STORAGE))
@@ -32,11 +34,13 @@ function App() {
   }, []);
 
   return (
-    <ChakraProvider>
-      <div className="App">
-        {token ? <RouterProvider router={router} /> : <Login />}
-      </div>
-    </ChakraProvider>
+    <QueryClientProvider client={queryClient}>
+      <ChakraProvider>
+        <div className="App">
+          {token ? <RouterProvider router={router} /> : <Login />}
+        </div>
+      </ChakraProvider>
+    </QueryClientProvider>
   );
 }
 

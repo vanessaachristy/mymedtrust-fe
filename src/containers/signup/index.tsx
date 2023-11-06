@@ -32,8 +32,8 @@ import {
   FaWeight,
 } from "react-icons/fa";
 import { GiBodyHeight } from "react-icons/gi";
-import { UserType } from "../../constants/user";
-import { PATH } from "../../constants/user/path";
+import { BloodType, UserType } from "../../constants/user";
+import { PATH } from "../../constants/path";
 
 const CFaUserAlt = chakra(FaUserAlt);
 const CFaLock = chakra(FaLock);
@@ -171,10 +171,10 @@ const SignUp = () => {
           value={patientFormData.bloodType}
           onChange={handlePatientInputChange}
         >
-          <option value="A">A</option>
-          <option value="B">B</option>
-          <option value="AB">AB</option>
-          <option value="AB">O</option>
+          <option value={BloodType.A}>A</option>
+          <option value={BloodType.B}>B</option>
+          <option value={BloodType.AB}>AB</option>
+          <option value={BloodType.O}>O</option>
         </Select>
       </FormControl>
       <FormControl>

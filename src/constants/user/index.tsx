@@ -5,3 +5,10 @@ export const enum UserType {
   DOCTOR = "doctor",
   ADMIN = "admin",
 }
+
+export const enum BloodType {
+  A = "A",
+  B = "B",
+  AB = "AB",
+  O = "O",
+}

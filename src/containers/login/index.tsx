@@ -13,9 +13,15 @@ import {
   Link,
   Stack,
   Box,
+  Alert,
+  AlertIcon,
+  AlertTitle,
+  AlertDescription,
 } from "@chakra-ui/react";
 import { FaUserAlt, FaLock } from "react-icons/fa";
-import { PATH } from "../../constants/user/path";
+import { PATH } from "../../constants/path";
+import axios from "axios";
+import { useMutation } from "react-query";
 
 const CFaUserAlt = chakra(FaUserAlt);
 const CFaLock = chakra(FaLock);
@@ -40,10 +46,36 @@ const Login = () => {
     });
   };
 
+  const [invalidUser, setInvalidUser] = useState(false);
+  const [unauthorizedMessage, setUnauthorizedMessage] = useState("");
+  const loginMutation = useMutation({
+    mutationFn: (data: any) => {
+      return axios
+        .post("http://localhost:3000/user/login", data)
+        .then(function (response) {
+          setInvalidUser(false);
+          setUnauthorizedMessage("");
+          console.log(response, "response");
+        })
+        .catch(function (error) {
+          if (error.response.status === 401) {
+            console.log("error", error.response);
+            setInvalidUser(true);
+            setUnauthorizedMessage(error.response.data.message);
+          }
+        });
+    },
+  });
+
   const handleSubmit = (e: any) => {
     e.preventDefault();
     // You can handle form submission logic here, such as sending the data to a server or performing client-side validation.
     console.log("Form submitted with data:", formData);
+    let body = {
+      email: formData.email,
+      password: formData.password,
+    };
+    loginMutation.mutate(body);
   };
 
   return (
@@ -53,7 +85,7 @@ const Login = () => {
           MyMedtrace
         </div>
         <div className="h-[80%] flex flex-col justify-center items-center w-full">
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} className="w-full">
             <Stack
               spacing={4}
               padding={"12px"}
@@ -106,9 +138,17 @@ const Login = () => {
                 type="submit"
                 colorScheme="blue"
                 width="full"
+                isLoading={loginMutation.isLoading}
               >
                 Login
               </Button>
+              {invalidUser && (
+                <Alert status="error">
+                  <AlertIcon />
+                  {/* <AlertTitle>Unauthorized user.</AlertTitle> */}
+                  <AlertDescription>{unauthorizedMessage}</AlertDescription>
+                </Alert>
+              )}
               <div>
                 New to us?{" "}
                 <Link color="blue.400" href={PATH.SignUp}>

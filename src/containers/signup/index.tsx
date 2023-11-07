@@ -17,6 +17,9 @@ import {
   Select,
   FormErrorMessage,
   Divider,
+  Alert,
+  AlertIcon,
+  AlertTitle,
 } from "@chakra-ui/react";
 import {
   FaUserAlt,
@@ -34,6 +37,9 @@ import {
 import { GiBodyHeight } from "react-icons/gi";
 import { BloodType, UserType } from "../../constants/user";
 import { PATH } from "../../constants/path";
+import { Form } from "react-router-dom";
+import { useMutation } from "react-query";
+import axiosWithCredentials from "../../api/fetch";
 
 const CFaUserAlt = chakra(FaUserAlt);
 const CFaLock = chakra(FaLock);
@@ -109,6 +115,27 @@ const SignUp = () => {
     });
   };
 
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const signupMutation = useMutation({
+    mutationFn: (data: any) => {
+      return axiosWithCredentials
+        .post("/user/signup", data)
+        .then(function (response) {
+          console.log(response);
+        })
+        .catch(function (error) {
+          if (error.response.status === 401 || error.response.status === 400) {
+            let errMessage = error.response.data.message;
+            setErrorMessage(errMessage);
+          } else {
+            setErrorMessage("Something is wrong!");
+          }
+          throw new Error();
+        });
+    },
+  });
+
   const handleSubmit = (e: any) => {
     e.preventDefault();
     // You can handle form submission logic here, such as sending the data to a server or performing client-side validation.
@@ -118,7 +145,71 @@ const SignUp = () => {
       patientFormData,
       doctorFormData
     );
+
+    //     {
+    //     "name": "Christy",
+    //     "email": "christy@gmail.com",
+    //     "password": "password123",
+    //     "address": "0x8Dd02DF718aC13B7502AC421a28265aC6A9631fF",
+    //     "account": "0x8Dd02DF718aC13B7502AC421a28265aC6A9631fF",
+    //     "ic": "G74839ABC",
+    //     "gender": "Female",
+    //     "birthdate": "26-09-02",
+    //     "homeAddress": "ntu",
+    //     "phone": "12345678",
+    //     "userType": "patient",
+    //     "emergencyContact": {
+    //         "name": "vanessa",
+    //         "number": "09120010"
+    //     },
+    //     "bloodType": "O",
+    //     "height": "170",
+    //     "weight": "63"
+    // }
+    let body = {
+      name: formData.name,
+      email: formData.email,
+      password: formData.password,
+      address: formData.contactAddress,
+      ic: formData.IC,
+      phone: formData.phone,
+      gender: formData.gender,
+      birthdate: formData.birthdate,
+      account: formData.contactAddress,
+      homeAddress: `${formData.address}, ${formData.city}, ${formData.zipcode}`,
+      userType: userType,
+    };
+
+    if (userType === UserType.PATIENT) {
+      let patientInfo = {
+        emergencyContact: {
+          name: patientFormData.emergencyContact,
+          number: patientFormData.emergencyNumber,
+        },
+        bloodType: patientFormData.bloodType,
+        height: patientFormData.height,
+        weight: patientFormData.weight,
+      };
+
+      body = { ...body, ...patientInfo };
+    }
+
+    if (userType === UserType.DOCTOR) {
+      let doctorInfo = {
+        hospital: doctorFormData.hospital,
+        qualification: doctorFormData.qualification,
+        major: doctorFormData.major,
+      };
+
+      body = { ...body, ...doctorInfo };
+    }
+
+    console.log(body);
+
+    signupMutation.mutate(body);
   };
+
+  console.log(signupMutation.isError);
 
   const [passwordError, setPasswordError] = useState("");
 
@@ -136,7 +227,7 @@ const SignUp = () => {
     <>
       <Stack spacing={2} paddingBottom={"6px"}>
         <FormLabel as="legend">Emergency Contact</FormLabel>
-        <FormControl>
+        <FormControl isRequired>
           <InputGroup>
             <InputLeftElement
               pointerEvents="none"
@@ -151,7 +242,7 @@ const SignUp = () => {
             />
           </InputGroup>
         </FormControl>
-        <FormControl>
+        <FormControl isRequired>
           <InputGroup>
             <InputLeftAddon children={"+65"} />
             <Input
@@ -164,7 +255,7 @@ const SignUp = () => {
           </InputGroup>
         </FormControl>
       </Stack>
-      <FormControl>
+      <FormControl isRequired>
         <Select
           placeholder="Blood Type"
           name="bloodType"
@@ -177,7 +268,7 @@ const SignUp = () => {
           <option value={BloodType.O}>O</option>
         </Select>
       </FormControl>
-      <FormControl>
+      <FormControl isRequired>
         <InputGroup>
           <InputLeftElement
             pointerEvents="none"
@@ -193,7 +284,7 @@ const SignUp = () => {
           <InputRightElement pointerEvents="none" children={"cm"} />
         </InputGroup>
       </FormControl>
-      <FormControl>
+      <FormControl isRequired>
         <InputGroup>
           <InputLeftElement
             pointerEvents="none"
@@ -213,7 +304,7 @@ const SignUp = () => {
   );
   let doctorForm = (
     <>
-      <FormControl>
+      <FormControl isRequired>
         <InputGroup>
           <InputLeftElement
             pointerEvents="none"
@@ -229,7 +320,7 @@ const SignUp = () => {
           />
         </InputGroup>
       </FormControl>
-      <FormControl>
+      <FormControl isRequired>
         <InputGroup>
           <InputLeftElement
             pointerEvents="none"
@@ -238,13 +329,13 @@ const SignUp = () => {
           <Input
             type="text"
             placeholder="Qualification"
-            name="bloodType"
+            name="qualification"
             value={doctorFormData.qualification}
             onChange={handleDoctorInputChange}
           />
         </InputGroup>
       </FormControl>
-      <FormControl>
+      <FormControl isRequired>
         <InputGroup>
           <InputLeftElement
             pointerEvents="none"
@@ -264,13 +355,13 @@ const SignUp = () => {
   );
 
   return (
-    <div className="flex justify-center items-center">
+    <div className="flex justify-center items-center p-12">
       <div className="w-[60vw] h-auto flex flex-col justify-center items-center px-12 space-y-12">
         <div className="w-full text-cyan-800 font-semibold text-2xl">
           MyMedtrace
         </div>
         <div className="h-[80%] flex flex-col justify-center items-center w-full">
-          <form onSubmit={handleSubmit}>
+          <Form onSubmit={handleSubmit}>
             <Stack
               spacing={6}
               padding={"12px"}
@@ -285,7 +376,6 @@ const SignUp = () => {
                   Login
                 </Link>
               </div>
-
               <FormControl isRequired>
                 <InputGroup>
                   <InputLeftElement
@@ -392,7 +482,13 @@ const SignUp = () => {
                     pointerEvents="none"
                     children={<CFaIdCard color="gray.300" />}
                   />
-                  <Input type="text" placeholder="IC" />
+                  <Input
+                    type="text"
+                    placeholder="IC"
+                    name="IC"
+                    value={formData.IC}
+                    onChange={handleInputChange}
+                  />
                 </InputGroup>
               </FormControl>
               <FormControl isRequired>
@@ -515,11 +611,25 @@ const SignUp = () => {
                 type="submit"
                 colorScheme="blue"
                 width="full"
+                isLoading={signupMutation.isLoading}
               >
                 Sign Up
               </Button>
             </Stack>
-          </form>
+          </Form>
+          {signupMutation.isError && (
+            <Alert status="error">
+              <AlertIcon />
+              <AlertTitle>{errorMessage ?? "Something went wrong!"}</AlertTitle>
+            </Alert>
+          )}
+
+          {signupMutation.isSuccess && !signupMutation.isError && (
+            <Alert status="success">
+              <AlertIcon />
+              <AlertTitle>Sign up successful!</AlertTitle>
+            </Alert>
+          )}
         </div>
       </div>
     </div>

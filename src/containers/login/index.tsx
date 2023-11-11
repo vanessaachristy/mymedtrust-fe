@@ -47,25 +47,23 @@ const Login = () => {
     });
   };
 
-  const [invalidUser, setInvalidUser] = useState(false);
   const [unauthorizedMessage, setUnauthorizedMessage] = useState("");
   const loginMutation = useMutation({
     mutationFn: (data: any) => {
       return axiosWithCredentials
         .post("/user/login", data)
         .then(function (response) {
-          setInvalidUser(false);
           setUnauthorizedMessage("");
           console.log(response.headers);
         })
         .catch(function (error) {
           if (error.response.status === 401) {
             console.log("error", error.response);
-            setInvalidUser(true);
             setUnauthorizedMessage(error.response.data.message);
           } else {
             setUnauthorizedMessage("Something is wrong!");
           }
+          throw new Error();
         });
     },
   });
@@ -144,10 +142,16 @@ const Login = () => {
               >
                 Login
               </Button>
-              {invalidUser && (
+              {loginMutation.isError && (
                 <Alert status="error">
                   <AlertIcon />
                   <AlertDescription>{unauthorizedMessage}</AlertDescription>
+                </Alert>
+              )}
+              {loginMutation.isSuccess && !loginMutation.isError && (
+                <Alert status="success">
+                  <AlertIcon />
+                  <AlertTitle>Sign up successful!</AlertTitle>
                 </Alert>
               )}
               <div>

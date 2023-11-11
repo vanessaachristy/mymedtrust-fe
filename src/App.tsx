@@ -8,6 +8,10 @@ import { ChakraProvider } from "@chakra-ui/react";
 import SignUp from "./containers/signup";
 import { PATH } from "./constants/path";
 import { QueryClient, QueryClientProvider } from "react-query";
+import NavBar from "./components/NavBar";
+import Observations from "./containers/observations";
+import Allergies from "./containers/allergies";
+import Conditions from "./containers/conditions";
 
 const router = createBrowserRouter([
   {
@@ -22,6 +26,18 @@ const router = createBrowserRouter([
     path: PATH.SignUp,
     element: <SignUp />,
   },
+  {
+    path: PATH.Observations,
+    element: <Observations />,
+  },
+  {
+    path: PATH.Allergies,
+    element: <Allergies />,
+  },
+  {
+    path: PATH.Conditions,
+    element: <Conditions />,
+  },
 ]);
 
 function App() {
@@ -33,11 +49,20 @@ function App() {
       setToken(window.localStorage.getItem(JWT_TOKEN_STORAGE) ?? "");
   }, []);
 
+  useEffect(() => {
+    if (!token) {
+      return () => {
+        <Login />;
+      };
+    }
+  }, [token]);
+
   return (
     <QueryClientProvider client={queryClient}>
       <ChakraProvider>
         <div className="App">
-          {token ? <RouterProvider router={router} /> : <Login />}
+          <NavBar />
+          <RouterProvider router={router} />
         </div>
       </ChakraProvider>
     </QueryClientProvider>

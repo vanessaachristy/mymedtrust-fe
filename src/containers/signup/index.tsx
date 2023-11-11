@@ -29,10 +29,10 @@ import {
   FaHome,
   FaIdCard,
   FaEnvelope,
-  FaHospitalSymbol,
   FaUserGraduate,
   FaUserMd,
   FaWeight,
+  FaKey,
 } from "react-icons/fa";
 import { GiBodyHeight } from "react-icons/gi";
 import { BloodType, UserType } from "../../constants/user";
@@ -48,11 +48,11 @@ const CFaCalendar = chakra(FaCalendar);
 const CFaHome = chakra(FaHome);
 const CFaIdCard = chakra(FaIdCard);
 const CFaEnvelope = chakra(FaEnvelope);
-const CFaHospital = chakra(FaHospitalSymbol);
 const CFaUserMd = chakra(FaUserMd);
 const CFaUserGraduate = chakra(FaUserGraduate);
 const CFaWeight = chakra(FaWeight);
 const CGiBodyHeight = chakra(GiBodyHeight);
+const CFaKey = chakra(FaKey);
 
 const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -72,9 +72,12 @@ const SignUp = () => {
     weight: "",
   });
   const [doctorFormData, setDoctorFormData] = useState({
-    hospital: "",
     qualification: "",
     major: "",
+  });
+
+  const [adminFormData, setAdminFormData] = useState({
+    adminKey: "",
   });
 
   const [formData, setFormData] = useState({
@@ -85,7 +88,7 @@ const SignUp = () => {
     IC: "",
     phone: "",
     birthdate: "",
-    gender: "",
+    gender: "Male",
     address: "",
     city: "",
     zipcode: "",
@@ -115,6 +118,14 @@ const SignUp = () => {
     });
   };
 
+  const handleAdminInputChange = (e: any) => {
+    const { name, value } = e.target;
+    setAdminFormData({
+      ...adminFormData,
+      [name]: value,
+    });
+  };
+
   const [errorMessage, setErrorMessage] = useState("");
 
   const signupMutation = useMutation({
@@ -138,34 +149,6 @@ const SignUp = () => {
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
-    // You can handle form submission logic here, such as sending the data to a server or performing client-side validation.
-    console.log(
-      "Form submitted with data:",
-      formData,
-      patientFormData,
-      doctorFormData
-    );
-
-    //     {
-    //     "name": "Christy",
-    //     "email": "christy@gmail.com",
-    //     "password": "password123",
-    //     "address": "0x8Dd02DF718aC13B7502AC421a28265aC6A9631fF",
-    //     "account": "0x8Dd02DF718aC13B7502AC421a28265aC6A9631fF",
-    //     "ic": "G74839ABC",
-    //     "gender": "Female",
-    //     "birthdate": "26-09-02",
-    //     "homeAddress": "ntu",
-    //     "phone": "12345678",
-    //     "userType": "patient",
-    //     "emergencyContact": {
-    //         "name": "vanessa",
-    //         "number": "09120010"
-    //     },
-    //     "bloodType": "O",
-    //     "height": "170",
-    //     "weight": "63"
-    // }
     let body = {
       name: formData.name,
       email: formData.email,
@@ -196,7 +179,6 @@ const SignUp = () => {
 
     if (userType === UserType.DOCTOR) {
       let doctorInfo = {
-        hospital: doctorFormData.hospital,
         qualification: doctorFormData.qualification,
         major: doctorFormData.major,
       };
@@ -204,12 +186,16 @@ const SignUp = () => {
       body = { ...body, ...doctorInfo };
     }
 
-    console.log(body);
+    if (userType === UserType.ADMIN) {
+      let adminInfo = {
+        adminKey: adminFormData.adminKey,
+      };
+
+      body = { ...body, ...adminInfo };
+    }
 
     signupMutation.mutate(body);
   };
-
-  console.log(signupMutation.isError);
 
   const [passwordError, setPasswordError] = useState("");
 
@@ -308,22 +294,6 @@ const SignUp = () => {
         <InputGroup>
           <InputLeftElement
             pointerEvents="none"
-            children={<CFaHospital color="gray.300" />}
-          />
-          <Input
-            htmlSize={6}
-            type="text"
-            placeholder="Hospital/Organization"
-            name="hospital"
-            value={doctorFormData.hospital}
-            onChange={handleDoctorInputChange}
-          />
-        </InputGroup>
-      </FormControl>
-      <FormControl isRequired>
-        <InputGroup>
-          <InputLeftElement
-            pointerEvents="none"
             children={<CFaUserMd color="gray.300" />}
           />
           <Input
@@ -348,6 +318,25 @@ const SignUp = () => {
             name="major"
             value={doctorFormData.major}
             onChange={handleDoctorInputChange}
+          />
+        </InputGroup>
+      </FormControl>
+    </>
+  );
+  let adminForm = (
+    <>
+      <FormControl isRequired>
+        <InputGroup>
+          <InputLeftElement
+            pointerEvents="none"
+            children={<CFaKey color="gray.300" />}
+          />
+          <Input
+            type="text"
+            placeholder="Admin Key"
+            name="adminKey"
+            value={adminFormData.adminKey}
+            onChange={handleAdminInputChange}
           />
         </InputGroup>
       </FormControl>
@@ -605,6 +594,7 @@ const SignUp = () => {
 
               {userType === UserType.DOCTOR && doctorForm}
               {userType === UserType.PATIENT && patientForm}
+              {userType === UserType.ADMIN && adminForm}
 
               <Button
                 borderRadius={12}

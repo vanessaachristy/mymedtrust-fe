@@ -10,8 +10,15 @@ import ConditionCard from "../../components/ConditionCard";
 import AllergyCard from "../../components/AllergyCard";
 import { allergy1 } from "../../data/mockData/allergy";
 
-const Home = () => {
-  return <div>Dashboard</div>;
+const Observations = () => {
+  return (
+    <div>
+      <h1>Observations</h1>
+      <ObservationCard data={observation} />
+      <ObservationCard data={observation2} />
+      <ObservationCard data={observation3} />
+    </div>
+  );
 };
 
-export default Home;
+export default Observations;

@@ -3395,6 +3395,11 @@
     "@types/qs" "*"
     "@types/serve-static" "*"
 
+"@types/fhir@^0.0.39":
+  version "0.0.39"
+  resolved "https://registry.yarnpkg.com/@types/fhir/-/fhir-0.0.39.tgz#bf0f4b2602630c7543d04bc113abc21a7fc442a4"
+  integrity sha512-4HJimNUJ1ll1iSj2kzR2Rt+W3XcgmrcLuVthbjx1a+KGu5xhuD/2lmuimJfjc0lcqlFOPjZrDzhM5fjLbiWvzw==
+
 "@types/graceful-fs@^4.1.2":
   version "4.1.8"
   resolved "https://registry.yarnpkg.com/@types/graceful-fs/-/graceful-fs-4.1.8.tgz#417e461e4dc79d957dc3107f45fe4973b09c2915"

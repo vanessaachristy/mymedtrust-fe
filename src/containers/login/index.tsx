@@ -20,9 +20,9 @@ import {
 } from "@chakra-ui/react";
 import { FaUserAlt, FaLock } from "react-icons/fa";
 import { PATH } from "../../constants/path";
-import axios from "axios";
 import { useMutation } from "react-query";
 import axiosWithCredentials from "../../api/fetch";
+import { Form } from "react-router-dom";
 
 const CFaUserAlt = chakra(FaUserAlt);
 const CFaLock = chakra(FaLock);
@@ -85,7 +85,7 @@ const Login = () => {
           MyMedtrace
         </div>
         <div className="h-[80%] flex flex-col justify-center items-center w-full">
-          <form onSubmit={handleSubmit} className="w-full">
+          <Form onSubmit={handleSubmit} className="w-full">
             <Stack
               spacing={4}
               padding={"12px"}
@@ -161,7 +161,7 @@ const Login = () => {
                 </Link>
               </div>
             </Stack>
-          </form>
+          </Form>
         </div>
       </div>
       <div className="h-screen w-[50vw] bg-cyan-800"></div>

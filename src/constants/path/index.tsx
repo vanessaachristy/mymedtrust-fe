@@ -5,6 +5,8 @@ export const enum PATH {
   Observations = "/observations",
   Conditions = "/conditions",
   Allergies = "/allergies",
+  Whitelist = "/whitelist",
+  AddObservation = "/observations/add",
 }
 
 export const NAV_ITEMS = [
@@ -23,5 +25,13 @@ export const NAV_ITEMS = [
   {
     label: "Allergies",
     href: PATH.Allergies,
+  },
+  {
+    label: "Whitelist",
+    href: PATH.Whitelist,
+  },
+  {
+    label: "Add Observation",
+    href: PATH.AddObservation,
   },
 ];

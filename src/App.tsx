@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from "react";
 import "./App.scss";
 import Home from "./containers/home";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import {
+  createBrowserRouter,
+  RouterProvider,
+  useLocation,
+} from "react-router-dom";
 import Login from "./containers/login";
 import { JWT_TOKEN_STORAGE } from "./constants/user";
 import { ChakraProvider } from "@chakra-ui/react";
@@ -12,12 +16,10 @@ import NavBar from "./components/NavBar";
 import Observations from "./containers/observations";
 import Allergies from "./containers/allergies";
 import Conditions from "./containers/conditions";
+import Whitelist from "./containers/whitelist";
+import AddObservation from "./containers/add-observation";
 
 const router = createBrowserRouter([
-  {
-    path: PATH.Home,
-    element: <Home />,
-  },
   {
     path: PATH.Login,
     element: <Login />,
@@ -25,6 +27,10 @@ const router = createBrowserRouter([
   {
     path: PATH.SignUp,
     element: <SignUp />,
+  },
+  {
+    path: PATH.Home,
+    element: <Home />,
   },
   {
     path: PATH.Observations,
@@ -37,6 +43,14 @@ const router = createBrowserRouter([
   {
     path: PATH.Conditions,
     element: <Conditions />,
+  },
+  {
+    path: PATH.Whitelist,
+    element: <Whitelist />,
+  },
+  {
+    path: PATH.AddObservation,
+    element: <AddObservation />,
   },
 ]);
 
@@ -57,11 +71,15 @@ function App() {
     }
   }, [token]);
 
+  const showNavBar =
+    window.location.pathname !== PATH.Login &&
+    window.location.pathname !== PATH.SignUp;
+
   return (
     <QueryClientProvider client={queryClient}>
       <ChakraProvider>
         <div className="App">
-          <NavBar />
+          {showNavBar && <NavBar />}
           <RouterProvider router={router} />
         </div>
       </ChakraProvider>

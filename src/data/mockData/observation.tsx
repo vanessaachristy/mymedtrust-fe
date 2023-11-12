@@ -57,6 +57,22 @@ export const observation: Observation = {
     system: "http://unitsofmeasure.org",
     code: "[lb_av]",
   },
+  referenceRange: [
+    {
+      low: {
+        value: 100,
+        unit: "lbs",
+        system: "http://unitsofmeasure.org",
+        code: "lbs",
+      },
+      high: {
+        value: 150,
+        unit: "lbs",
+        system: "http://unitsofmeasure.org",
+        code: "lbs",
+      },
+    },
+  ],
 };
 
 export const observation2: Observation & DBMetadatas = {
@@ -124,10 +140,6 @@ export const observation2: Observation & DBMetadatas = {
 export const observation3: Observation = {
   resourceType: "Observation",
   id: "f001",
-  text: {
-    status: "generated",
-    div: "",
-  },
   identifier: [
     {
       use: "official",

@@ -5,11 +5,20 @@ import {
   InputGroup,
   InputLeftElement,
   Stack,
+  Alert,
+  AlertIcon,
+  AlertDescription,
+  AlertTitle,
 } from "@chakra-ui/react";
 import { useState } from "react";
+import { useMutation } from "react-query";
 import { Form } from "react-router-dom";
+import axiosWithCredentials from "../../api/fetch";
+import { useUserContext } from "../../model/user/userContext";
 
 const Whitelist = () => {
+  const user = useUserContext();
+  console.log(user);
   const [formData, setFormData] = useState({
     account: "0x8Dd02DF718aC13B7502AC421a28265aC6A9631fF",
     patient: "",
@@ -24,8 +33,31 @@ const Whitelist = () => {
     });
   };
 
+  const [unauthorizedMessage, setUnauthorizedMessage] = useState("");
+
+  const whitelistMutation = useMutation({
+    mutationFn: (data: any) => {
+      return axiosWithCredentials
+        .post("/doctor/whitelist", data)
+        .then(function (response) {
+          setUnauthorizedMessage("");
+          console.log(response.headers);
+        })
+        .catch(function (error) {
+          if (error.response.status === 401) {
+            console.log("error", error.response);
+            setUnauthorizedMessage(error.response.data.message);
+          } else {
+            setUnauthorizedMessage("Something is wrong!");
+          }
+          throw new Error();
+        });
+    },
+  });
+
   const handleSubmit = () => {
     console.log(formData);
+    whitelistMutation.mutate(formData);
   };
   return (
     <Form onSubmit={handleSubmit} className="w-full">
@@ -62,10 +94,28 @@ const Whitelist = () => {
             />
           </InputGroup>
         </FormControl>
-        <Button borderRadius={12} type="submit" colorScheme="blue" width="30%">
+        <Button
+          borderRadius={12}
+          type="submit"
+          colorScheme="blue"
+          width="30%"
+          isLoading={whitelistMutation.isLoading}
+        >
           Whitelist
         </Button>
       </Stack>
+      {whitelistMutation.isError && (
+        <Alert status="error">
+          <AlertIcon />
+          <AlertDescription>{unauthorizedMessage}</AlertDescription>
+        </Alert>
+      )}
+      {whitelistMutation.isSuccess && !whitelistMutation.isError && (
+        <Alert status="success">
+          <AlertIcon />
+          <AlertTitle>Whitelist successful!</AlertTitle>
+        </Alert>
+      )}
     </Form>
   );
 };

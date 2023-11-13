@@ -18,20 +18,7 @@ const NavBar = () => {
           <Box key={navItem.label}>
             <Popover trigger={"hover"} placement="bottom-start">
               <PopoverTrigger>
-                <Box
-                  color={
-                    window.location.pathname === navItem.href
-                      ? "blue.500"
-                      : "black"
-                  }
-                  as="a"
-                  p={2}
-                  href={navItem.href}
-                  fontSize={"xl"}
-                  fontWeight={500}
-                >
-                  {navItem.label}
-                </Box>
+                <Link to={navItem.href}> {navItem.label}</Link>
               </PopoverTrigger>
             </Popover>
           </Box>

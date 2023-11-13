@@ -1,4 +1,7 @@
 import {
+  Alert,
+  AlertIcon,
+  AlertTitle,
   Button,
   Card,
   CardBody,
@@ -23,9 +26,21 @@ import {
 import { Observation } from "fhir/r4";
 import { useEffect, useState } from "react";
 import { Form } from "react-router-dom";
+import { useUserContext } from "../../model/user/userContext";
+import { getCurrentDateTime } from "../../utils";
+import { useMutation } from "react-query";
+import axiosWithCredentials from "../../api/fetch";
 
 const ObservationInputCard = () => {
-  const [formData, setFormData] = useState<Observation>({
+  const { user } = useUserContext();
+
+  console.log(user);
+  const [formData, setFormData] = useState<
+    Observation & { account: string; patient: string; doctor: string }
+  >({
+    account: user.address,
+    doctor: user.address,
+    patient: "",
     resourceType: "Observation",
     status: "unknown",
     code: {
@@ -41,12 +56,12 @@ const ObservationInputCard = () => {
       reference: "",
       display: "",
     },
-    effectiveDateTime: new Date().toDateString(),
-    issued: new Date().toDateString(),
+    effectiveDateTime: getCurrentDateTime(),
+    issued: getCurrentDateTime(),
     performer: [
       {
-        reference: "Practitioner/ID",
-        display: "Account Name",
+        reference: `Practitioner/${user.address}`,
+        display: user.email,
       },
     ],
     valueQuantity: {
@@ -73,6 +88,35 @@ const ObservationInputCard = () => {
       },
     ],
   });
+
+  const Patient = (
+    <FormControl isRequired>
+      <Card>
+        <CardHeader>
+          <FormLabel size="sm" textTransform={"uppercase"} fontWeight={700}>
+            Patient
+          </FormLabel>
+        </CardHeader>
+        <CardBody>
+          <InputGroup>
+            <Input
+              type="text"
+              placeholder="Patient Address"
+              name="patient"
+              value={formData.patient}
+              onChange={(e) => {
+                const { value } = e.target;
+                setFormData({
+                  ...formData,
+                  patient: value,
+                });
+              }}
+            />
+          </InputGroup>
+        </CardBody>
+      </Card>
+    </FormControl>
+  );
 
   const ResourceType = (
     <FormControl isRequired>
@@ -601,8 +645,22 @@ const ObservationInputCard = () => {
     </Card>
   );
 
+  const addObservationMutation = useMutation({
+    mutationFn: (data: any) => {
+      return axiosWithCredentials
+        .post("/record/observation/create", data)
+        .then(function (response) {
+          console.log(response);
+        })
+        .catch(function (error) {
+          throw new Error();
+        });
+    },
+  });
+
   const handleSubmitForm = () => {
     console.log(JSON.stringify(formData));
+    addObservationMutation.mutate(formData);
   };
 
   return (
@@ -615,6 +673,7 @@ const ObservationInputCard = () => {
           width={"100%"}
           textAlign={"left"}
         >
+          {Patient}
           {ResourceType}
           {Status}
           {Code}
@@ -623,8 +682,23 @@ const ObservationInputCard = () => {
           {ValueQuantity}
           {ReferenceRange}
         </Stack>
-        <Button type="submit">Submit</Button>
+        <Button type="submit" isLoading={addObservationMutation.isLoading}>
+          Submit
+        </Button>
       </Form>
+      {addObservationMutation.isError && (
+        <Alert status="error">
+          <AlertIcon />
+          <AlertTitle>{"Something went wrong!"}</AlertTitle>
+        </Alert>
+      )}
+
+      {addObservationMutation.isSuccess && !addObservationMutation.isError && (
+        <Alert status="success">
+          <AlertIcon />
+          <AlertTitle>Add successful!</AlertTitle>
+        </Alert>
+      )}
     </div>
   );
 };

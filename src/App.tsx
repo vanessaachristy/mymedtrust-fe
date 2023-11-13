@@ -3,7 +3,11 @@ import "./App.scss";
 import Home from "./containers/home";
 import {
   createBrowserRouter,
+  Navigate,
+  Route,
+  BrowserRouter as Router,
   RouterProvider,
+  Routes,
   useLocation,
 } from "react-router-dom";
 import Login from "./containers/login";
@@ -18,72 +22,99 @@ import Allergies from "./containers/allergies";
 import Conditions from "./containers/conditions";
 import Whitelist from "./containers/whitelist";
 import AddObservation from "./containers/add-observation";
-
-const router = createBrowserRouter([
-  {
-    path: PATH.Login,
-    element: <Login />,
-  },
-  {
-    path: PATH.SignUp,
-    element: <SignUp />,
-  },
-  {
-    path: PATH.Home,
-    element: <Home />,
-  },
-  {
-    path: PATH.Observations,
-    element: <Observations />,
-  },
-  {
-    path: PATH.Allergies,
-    element: <Allergies />,
-  },
-  {
-    path: PATH.Conditions,
-    element: <Conditions />,
-  },
-  {
-    path: PATH.Whitelist,
-    element: <Whitelist />,
-  },
-  {
-    path: PATH.AddObservation,
-    element: <AddObservation />,
-  },
-]);
+import { Provider as ReduxProvider } from "react-redux";
+import store from "./model/store";
+import { checkAuthorizationCookie } from "./api/fetch";
+import { UserProvider } from "./model/user/userContext";
 
 function App() {
-  const [token, setToken] = useState<string>("");
   const queryClient = new QueryClient();
 
-  useEffect(() => {
-    if (window.localStorage.getItem(JWT_TOKEN_STORAGE))
-      setToken(window.localStorage.getItem(JWT_TOKEN_STORAGE) ?? "");
-  }, []);
+  const isAuthenticated = checkAuthorizationCookie();
 
-  useEffect(() => {
-    if (!token) {
-      return () => {
-        <Login />;
-      };
+  console.log("isAuth", isAuthenticated);
+
+  const ProtectedRoute = ({ children }: any) => {
+    if (!isAuthenticated) {
+      return <Navigate to={"/login"} />;
     }
-  }, [token]);
+    return (
+      <>
+        <NavBar />
+        {children}
+      </>
+    );
+  };
 
-  const showNavBar =
-    window.location.pathname !== PATH.Login &&
-    window.location.pathname !== PATH.SignUp;
+  const router = createBrowserRouter([
+    {
+      path: PATH.Login,
+      element: <Login />,
+    },
+    {
+      path: PATH.SignUp,
+      element: <SignUp />,
+    },
+    {
+      path: PATH.Home,
+      element: (
+        <ProtectedRoute>
+          <Home />
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: PATH.Observations,
+      element: (
+        <ProtectedRoute>
+          <Observations />
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: PATH.Allergies,
+      element: (
+        <ProtectedRoute>
+          <Allergies />
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: PATH.Conditions,
+      element: (
+        <ProtectedRoute>
+          <Conditions />
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: PATH.Whitelist,
+      element: (
+        <ProtectedRoute>
+          <Whitelist />
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: PATH.AddObservation,
+      element: (
+        <ProtectedRoute>
+          <AddObservation />
+        </ProtectedRoute>
+      ),
+    },
+  ]);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <ChakraProvider>
-        <div className="App">
-          {showNavBar && <NavBar />}
-          <RouterProvider router={router} />
-        </div>
-      </ChakraProvider>
-    </QueryClientProvider>
+    <UserProvider>
+      <ReduxProvider store={store}>
+        <QueryClientProvider client={queryClient}>
+          <ChakraProvider>
+            <RouterProvider router={router} />
+          </ChakraProvider>
+        </QueryClientProvider>
+      </ReduxProvider>
+    </UserProvider>
   );
 }
 

@@ -22,7 +22,13 @@ import { FaUserAlt, FaLock } from "react-icons/fa";
 import { PATH } from "../../constants/path";
 import { useMutation } from "react-query";
 import axiosWithCredentials from "../../api/fetch";
-import { Form } from "react-router-dom";
+import { Form, Navigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../model/rootReducer";
+import { setUser } from "../../model/user/userAction";
+import { useNavigate } from "react-router-dom";
+import { selectUser } from "../../model/selector";
+import { useUserContext } from "../../model/user/userContext";
 
 const CFaUserAlt = chakra(FaUserAlt);
 const CFaLock = chakra(FaLock);
@@ -47,6 +53,10 @@ const Login = () => {
     });
   };
 
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { setUser } = useUserContext();
+
   const [unauthorizedMessage, setUnauthorizedMessage] = useState("");
   const loginMutation = useMutation({
     mutationFn: (data: any) => {
@@ -54,7 +64,14 @@ const Login = () => {
         .post("/user/login", data)
         .then(function (response) {
           setUnauthorizedMessage("");
-          console.log(response.headers);
+          const { email, address } = response.data.data;
+          const newUser = {
+            email: email,
+            address: address,
+          };
+          setUser(newUser);
+          // dispatch(setUser(newUser));
+          navigate("/");
         })
         .catch(function (error) {
           if (error.response.status === 401) {
@@ -85,7 +102,7 @@ const Login = () => {
           MyMedtrace
         </div>
         <div className="h-[80%] flex flex-col justify-center items-center w-full">
-          <Form onSubmit={handleSubmit} className="w-full">
+          <form onSubmit={handleSubmit} className="w-full">
             <Stack
               spacing={4}
               padding={"12px"}
@@ -161,7 +178,7 @@ const Login = () => {
                 </Link>
               </div>
             </Stack>
-          </Form>
+          </form>
         </div>
       </div>
       <div className="h-screen w-[50vw] bg-cyan-800"></div>

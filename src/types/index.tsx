@@ -3,3 +3,8 @@ export type DBMetadatas = {
   timestamp: string;
   __v: number;
 };
+
+export type User = {
+  email: string;
+  address: string;
+};

@@ -663,7 +663,7 @@ const ObservationInputCard = () => {
   };
 
   return (
-    <div>
+    <div className="w-[80vw]">
       <Form
         onSubmit={handleSubmitForm}
         className="w-full flex flex-col justify-center"

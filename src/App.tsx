@@ -21,6 +21,7 @@ import AddObservation from "./containers/add-observation";
 import { UserProvider, useUserContext } from "./model/user/userContext";
 import { CookiesProvider, useCookies } from "react-cookie";
 import Medications from "./containers/medications";
+import AddCondition from "./containers/add-condition";
 
 function App() {
   const queryClient = new QueryClient();
@@ -113,6 +114,14 @@ function App() {
       element: (
         <ProtectedRoute>
           <AddObservation />
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: PATH.AddCondition,
+      element: (
+        <ProtectedRoute>
+          <AddCondition />
         </ProtectedRoute>
       ),
     },

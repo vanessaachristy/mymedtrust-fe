@@ -9,7 +9,10 @@ import {
   AlertIcon,
   AlertDescription,
   AlertTitle,
+  chakra,
+  Heading,
 } from "@chakra-ui/react";
+import { FaUserAlt, FaUserMd } from "react-icons/fa";
 import { useState } from "react";
 import { useMutation } from "react-query";
 import { Form } from "react-router-dom";
@@ -18,7 +21,8 @@ import { useUserContext } from "../../model/user/userContext";
 
 const Whitelist = () => {
   const user = useUserContext();
-  console.log(user);
+  const CFaUserAlt = chakra(FaUserAlt);
+  const CFaUserMd = chakra(FaUserMd);
   const [formData, setFormData] = useState({
     account: "0x8Dd02DF718aC13B7502AC421a28265aC6A9631fF",
     patient: "",
@@ -41,12 +45,11 @@ const Whitelist = () => {
         .post("/doctor/whitelist", data)
         .then(function (response) {
           setUnauthorizedMessage("");
-          console.log(response.headers);
         })
         .catch(function (error) {
-          if (error.response.status === 401) {
-            console.log("error", error.response);
-            setUnauthorizedMessage(error.response.data.message);
+          if (error?.response?.status === 401) {
+            console.log("error", error?.response);
+            setUnauthorizedMessage(error?.response?.data?.message);
           } else {
             setUnauthorizedMessage("Something is wrong!");
           }
@@ -60,7 +63,10 @@ const Whitelist = () => {
     whitelistMutation.mutate(formData);
   };
   return (
-    <Form onSubmit={handleSubmit} className="w-full">
+    <Form
+      onSubmit={handleSubmit}
+      className="w-screen flex flex-col justify-center items-center px-12"
+    >
       <Stack
         spacing={4}
         padding={"12px"}
@@ -69,10 +75,13 @@ const Whitelist = () => {
         justifyContent={"center"}
         alignItems={"center"}
       >
-        <h3>Whitelist patient</h3>
+        <Heading color="blue.500">Whitelist Doctor</Heading>
         <FormControl isRequired>
           <InputGroup>
-            <InputLeftElement pointerEvents="none" />
+            <InputLeftElement
+              pointerEvents="none"
+              children={<CFaUserMd color="gray.300" />}
+            />
             <Input
               type="text"
               placeholder="Doctor address"
@@ -84,7 +93,10 @@ const Whitelist = () => {
         </FormControl>
         <FormControl isRequired>
           <InputGroup>
-            <InputLeftElement pointerEvents="none" />
+            <InputLeftElement
+              pointerEvents="none"
+              children={<CFaUserAlt color="gray.300" />}
+            />
             <Input
               type="text"
               placeholder="Patient address"

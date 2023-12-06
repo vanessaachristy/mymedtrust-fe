@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   FormControl,
   FormLabel,
@@ -22,13 +22,9 @@ import { FaUserAlt, FaLock } from "react-icons/fa";
 import { PATH } from "../../constants/path";
 import { useMutation } from "react-query";
 import axiosWithCredentials from "../../api/fetch";
-import { Form, Navigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../model/rootReducer";
-import { setUser } from "../../model/user/userAction";
-import { useNavigate } from "react-router-dom";
-import { selectUser } from "../../model/selector";
+import { Navigate, useNavigate } from "react-router-dom";
 import { useUserContext } from "../../model/user/userContext";
+import LandingImage from "../../assets/landing.png";
 
 const CFaUserAlt = chakra(FaUserAlt);
 const CFaLock = chakra(FaLock);
@@ -53,9 +49,8 @@ const Login = () => {
     });
   };
 
-  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { setUser } = useUserContext();
+  const { user, setUser } = useUserContext();
 
   const [unauthorizedMessage, setUnauthorizedMessage] = useState("");
   const loginMutation = useMutation({
@@ -70,13 +65,10 @@ const Login = () => {
             address: address,
           };
           setUser(newUser);
-          // dispatch(setUser(newUser));
-          navigate("/");
         })
         .catch(function (error) {
-          if (error.response.status === 401) {
-            console.log("error", error.response);
-            setUnauthorizedMessage(error.response.data.message);
+          if (error?.response?.status === 401) {
+            setUnauthorizedMessage(error?.response?.data.message);
           } else {
             setUnauthorizedMessage("Something is wrong!");
           }
@@ -94,6 +86,14 @@ const Login = () => {
     };
     loginMutation.mutate(body);
   };
+
+  useEffect(() => {
+    if (loginMutation.isSuccess && !loginMutation.isError) {
+      navigate("/observations/add", {
+        replace: true,
+      });
+    }
+  }, [loginMutation.isSuccess, loginMutation.isError]);
 
   return (
     <div className="flex justify-between items-center">
@@ -119,7 +119,7 @@ const Login = () => {
                   />
                   <Input
                     type="email"
-                    placeholder="email address"
+                    placeholder="Email address"
                     name="email"
                     value={formData.email}
                     onChange={handleInputChange}
@@ -181,7 +181,14 @@ const Login = () => {
           </form>
         </div>
       </div>
-      <div className="h-screen w-[50vw] bg-cyan-800"></div>
+      <div className="h-screen w-[50vw] relative">
+        <img
+          src={LandingImage}
+          alt=""
+          className="w-auto h-full block object-cover"
+        />
+        <div className="absolute top-0 left-0 w-full h-full bg-cyan-800 bg-opacity-50"></div>
+      </div>
     </div>
   );
 };

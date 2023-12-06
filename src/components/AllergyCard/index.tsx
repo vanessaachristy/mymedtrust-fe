@@ -13,7 +13,7 @@ const AllergyCard = ({ data }: AllergyCardProps) => {
   const CMdNoFood = chakra(MdNoFood);
 
   return (
-    <div>
+    <div className="w-[60%]">
       <FhirResource
         fhirResource={data}
         fhirVersion={fhirVersions.R4}

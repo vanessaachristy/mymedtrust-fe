@@ -136,8 +136,11 @@ const SignUp = () => {
           console.log(response);
         })
         .catch(function (error) {
-          if (error.response.status === 401 || error.response.status === 400) {
-            let errMessage = error.response.data.message;
+          if (
+            error?.response?.status === 401 ||
+            error?.response?.status === 400
+          ) {
+            let errMessage = error?.response?.data?.message;
             setErrorMessage(errMessage);
           } else {
             setErrorMessage("Something is wrong!");
@@ -344,10 +347,12 @@ const SignUp = () => {
   );
 
   return (
-    <div className="flex justify-center items-center p-12">
+    <div className="flex justify-center items-center">
       <div className="w-[60vw] h-auto flex flex-col justify-center items-center px-12 space-y-12">
-        <div className="w-full text-cyan-800 font-semibold text-2xl">
-          MyMedtrace
+        <div className="bg-cyan-800 p-12 w-screen">
+          <div className="w-full text-white font-semibold text-2xl">
+            MyMedtrace
+          </div>
         </div>
         <div className="h-[80%] flex flex-col justify-center items-center w-full">
           <Form onSubmit={handleSubmit}>

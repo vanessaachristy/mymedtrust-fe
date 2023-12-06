@@ -1,16 +1,16 @@
 import { chakra } from "@chakra-ui/react";
-import { Condition } from "fhir/r4";
-import { FaFileMedicalAlt } from "react-icons/fa";
+import { Medication } from "fhir/r4";
+import { GiMedicinePills } from "react-icons/gi";
 
 require("fhir-react/build/style.css");
 require("fhir-react/build/bootstrap-reboot.min.css");
 const { FhirResource, fhirVersions } = require("fhir-react");
 
 type ConditionCardProps = {
-  data: Condition;
+  data: Medication;
 };
-const ConditionCard = ({ data }: ConditionCardProps) => {
-  const CFaFileMedicalAlt = chakra(FaFileMedicalAlt);
+const MedicationCard = ({ data }: ConditionCardProps) => {
+  const CGiMedicinePills = chakra(GiMedicinePills);
 
   return (
     <div className="w-[60%]">
@@ -19,7 +19,7 @@ const ConditionCard = ({ data }: ConditionCardProps) => {
         fhirVersion={fhirVersions.R4}
         fhirIcons={
           <span>
-            <CFaFileMedicalAlt color={"green.500"} size={25} />
+            <CGiMedicinePills color={"orange.500"} size={25} />
           </span>
         }
         withCarinBBProfile
@@ -29,4 +29,4 @@ const ConditionCard = ({ data }: ConditionCardProps) => {
   );
 };
 
-export default ConditionCard;
+export default MedicationCard;

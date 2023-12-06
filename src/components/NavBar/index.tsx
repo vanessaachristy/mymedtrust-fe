@@ -1,8 +1,16 @@
-import { Box, Divider, Popover, PopoverTrigger, Stack } from "@chakra-ui/react";
+import {
+  Box,
+  Divider,
+  Popover,
+  PopoverTrigger,
+  Stack,
+  Link,
+} from "@chakra-ui/react";
 import { NAV_ITEMS } from "../../constants/path";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const NavBar = () => {
+  const navigate = useNavigate();
   return (
     <Stack
       direction={"row"}
@@ -14,11 +22,26 @@ const NavBar = () => {
       borderBottom={"solid"}
     >
       {NAV_ITEMS.map((navItem) => {
+        console.log(window.location.pathname === navItem.href);
+
         return (
           <Box key={navItem.label}>
             <Popover trigger={"hover"} placement="bottom-start">
               <PopoverTrigger>
-                <Link to={navItem.href}> {navItem.label}</Link>
+                <Link
+                  href={navItem.href}
+                  color={
+                    window.location.pathname === navItem.href
+                      ? "blue.500"
+                      : "black"
+                  }
+                  onClick={(e) => {
+                    e.preventDefault();
+                    navigate(navItem.href);
+                  }}
+                >
+                  {navItem.label}
+                </Link>
               </PopoverTrigger>
             </Popover>
           </Box>

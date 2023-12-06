@@ -13,7 +13,7 @@ const ObservationCard = ({ data }: ObservationCardProps) => {
   const CPiMagnifying = chakra(PiFileMagnifyingGlass);
 
   return (
-    <div>
+    <div className="w-[60%]">
       <FhirResource
         fhirResource={data}
         fhirVersion={fhirVersions.R4}

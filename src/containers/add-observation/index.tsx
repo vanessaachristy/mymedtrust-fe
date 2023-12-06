@@ -4,12 +4,10 @@ import { useUserContext } from "../../model/user/userContext";
 
 const AddObservation = () => {
   return (
-    <>
-      <Heading size="lg" textTransform="uppercase">
-        Add new observation
-      </Heading>
+    <div className="flex flex-col items-center justify-center p-6">
+      <Heading color="blue.500">Add Observation</Heading>
       <ObservationInputCard />;
-    </>
+    </div>
   );
 };
 

@@ -19,6 +19,7 @@ import {
   NumberInputField,
   NumberInputStepper,
   Select,
+  Spinner,
   Stack,
   StackDivider,
   Text,
@@ -27,14 +28,13 @@ import { Observation } from "fhir/r4";
 import { useEffect, useState } from "react";
 import { Form } from "react-router-dom";
 import { useUserContext } from "../../model/user/userContext";
-import { getCurrentDateTime } from "../../utils";
+import { getCurrentDateTime, validateAddress } from "../../utils";
 import { useMutation } from "react-query";
 import axiosWithCredentials from "../../api/fetch";
+import { useFetchPatientDetailsQuery } from "../../api/user";
 
 const ObservationInputCard = () => {
   const { user } = useUserContext();
-
-  console.log(user);
   const [formData, setFormData] = useState<
     Observation & { account: string; patient: string; doctor: string }
   >({
@@ -118,8 +118,22 @@ const ObservationInputCard = () => {
     </FormControl>
   );
 
+  const {
+    data: patientDetails,
+    isLoading: isPatientDetailsLoading,
+    error: isPatientDetailsError,
+    refetch: fetchPatientDetails,
+  } = useFetchPatientDetailsQuery(formData?.patient);
+
+  useEffect(() => {
+    // Trigger a refetch when formData?.patient changes and is valid
+    if (validateAddress(formData?.patient)) {
+      fetchPatientDetails();
+    }
+  }, [formData?.patient, fetchPatientDetails]);
+
   const ResourceType = (
-    <FormControl isRequired>
+    <FormControl>
       <Card>
         <CardHeader>
           <FormLabel size="sm" textTransform={"uppercase"} fontWeight={700}>
@@ -311,41 +325,26 @@ const ObservationInputCard = () => {
                 type="text"
                 placeholder="Reference"
                 name="reference"
-                value={formData?.subject?.reference}
-                onChange={(e) => {
-                  const { value } = e.target;
-                  const subject = formData?.subject;
-                  setFormData({
-                    ...formData,
-                    subject: {
-                      ...subject,
-                      reference: value,
-                    },
-                  });
-                }}
+                // value={formData?.subject?.reference}
+                value={`Patient/${patientDetails?.primaryInfo?.address}`}
+                disabled
               />
             </InputGroup>
           </FormControl>
           <FormControl>
             <FormLabel>Display</FormLabel>
             <InputGroup>
-              <Input
-                type="text"
-                placeholder="Display"
-                name="display"
-                value={formData?.subject?.display}
-                onChange={(e) => {
-                  const { value } = e.target;
-                  const subject = formData?.subject;
-                  setFormData({
-                    ...formData,
-                    subject: {
-                      ...subject,
-                      display: value,
-                    },
-                  });
-                }}
-              />
+              {isPatientDetailsLoading ? (
+                <Spinner />
+              ) : (
+                <Input
+                  type="text"
+                  placeholder="Display"
+                  name="display"
+                  value={patientDetails?.primaryInfo?.name}
+                  disabled
+                />
+              )}
             </InputGroup>
           </FormControl>
         </Stack>
@@ -665,7 +664,10 @@ const ObservationInputCard = () => {
 
   return (
     <div>
-      <Form onSubmit={handleSubmitForm} className="w-full">
+      <Form
+        onSubmit={handleSubmitForm}
+        className="w-full flex flex-col justify-center"
+      >
         <Stack
           spacing={4}
           padding={"12px"}
@@ -682,7 +684,12 @@ const ObservationInputCard = () => {
           {ValueQuantity}
           {ReferenceRange}
         </Stack>
-        <Button type="submit" isLoading={addObservationMutation.isLoading}>
+        <Button
+          type="submit"
+          isLoading={addObservationMutation.isLoading}
+          bgColor={"blue.500"}
+          color={"white"}
+        >
           Submit
         </Button>
       </Form>

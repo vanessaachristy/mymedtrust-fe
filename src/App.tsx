@@ -4,14 +4,10 @@ import Home from "./containers/home";
 import {
   createBrowserRouter,
   Navigate,
-  Route,
   BrowserRouter as Router,
   RouterProvider,
-  Routes,
-  useLocation,
 } from "react-router-dom";
 import Login from "./containers/login";
-import { JWT_TOKEN_STORAGE } from "./constants/user";
 import { ChakraProvider } from "@chakra-ui/react";
 import SignUp from "./containers/signup";
 import { PATH } from "./constants/path";
@@ -22,21 +18,30 @@ import Allergies from "./containers/allergies";
 import Conditions from "./containers/conditions";
 import Whitelist from "./containers/whitelist";
 import AddObservation from "./containers/add-observation";
-import { Provider as ReduxProvider } from "react-redux";
-import store from "./model/store";
-import { checkAuthorizationCookie } from "./api/fetch";
-import { UserProvider } from "./model/user/userContext";
+import { UserProvider, useUserContext } from "./model/user/userContext";
+import { CookiesProvider, useCookies } from "react-cookie";
+import Medications from "./containers/medications";
 
 function App() {
   const queryClient = new QueryClient();
 
-  const isAuthenticated = checkAuthorizationCookie();
+  const [cookies, setCookie] = useCookies(["Authorization"]);
+  const [authenticated, setAuthenticated] = useState(
+    cookies.Authorization ? true : false
+  );
 
-  console.log("isAuth", isAuthenticated);
+  useEffect(() => {
+    if (cookies.Authorization) {
+      setAuthenticated(true);
+    } else {
+      setAuthenticated(false);
+    }
+  }, [cookies]);
+  const { user } = useUserContext();
 
   const ProtectedRoute = ({ children }: any) => {
-    if (!isAuthenticated) {
-      return <Navigate to={"/login"} />;
+    if (!authenticated) {
+      return <Navigate to={"/login"} replace />;
     }
     return (
       <>
@@ -88,6 +93,14 @@ function App() {
       ),
     },
     {
+      path: PATH.Medications,
+      element: (
+        <ProtectedRoute>
+          <Medications />
+        </ProtectedRoute>
+      ),
+    },
+    {
       path: PATH.Whitelist,
       element: (
         <ProtectedRoute>
@@ -107,13 +120,13 @@ function App() {
 
   return (
     <UserProvider>
-      <ReduxProvider store={store}>
+      <CookiesProvider>
         <QueryClientProvider client={queryClient}>
           <ChakraProvider>
             <RouterProvider router={router} />
           </ChakraProvider>
         </QueryClientProvider>
-      </ReduxProvider>
+      </CookiesProvider>
     </UserProvider>
   );
 }

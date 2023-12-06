@@ -21,8 +21,6 @@ export function checkAuthorizationCookie() {
     const cookiesArray = allCookies.split('; ');
     const authorizationCookie = cookiesArray.find(cookie => cookie.startsWith('Authorization='));
 
-
-
     if (authorizationCookie) {
         return true;
     } else {

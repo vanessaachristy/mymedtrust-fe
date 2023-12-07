@@ -39,12 +39,44 @@ import { useUserContext } from "../../model/user/userContext";
 import { getCurrentDateTime, validateAddress } from "../../utils";
 import { useMutation } from "react-query";
 import axiosWithCredentials from "../../api/fetch";
-import { useFetchPatientDetailsQuery } from "../../api/user";
+import {
+  useFetchPatientDetailsQuery,
+  useFetchUserDetailQuery,
+} from "../../api/user";
 import moment from "moment";
 import { BsPatchCheckFill } from "react-icons/bs";
 
 const ConditionInputCard = () => {
-  const { user } = useUserContext();
+  const { user, setUser } = useUserContext();
+  const { data: userData, refetch: fetchUserData } = useFetchUserDetailQuery();
+  useEffect(() => {
+    if (userData) {
+      setUser(userData);
+    }
+  }, [userData, setUser]);
+  useEffect(() => {
+    if (!user.name && !user.IC && user.isLoggedIn) {
+      fetchUserData();
+    }
+    if (user.email && user.address) {
+      let recorder = {
+        reference: `Practitioner/${user.address}`,
+        display: user.email,
+      };
+
+      let asserter = {
+        reference: `Practitioner/${user.address}`,
+        display: user.email,
+      };
+
+      setFormData({
+        ...formData,
+        recorder: recorder,
+        asserter: asserter,
+      });
+    }
+  }, [user, fetchUserData]);
+
   const emptyFormData: Condition & {
     account: string;
     patient: string;

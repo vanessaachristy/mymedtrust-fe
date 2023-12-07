@@ -39,11 +39,39 @@ import { useUserContext } from "../../model/user/userContext";
 import { getCurrentDateTime, validateAddress } from "../../utils";
 import { useMutation } from "react-query";
 import axiosWithCredentials from "../../api/fetch";
-import { useFetchPatientDetailsQuery } from "../../api/user";
+import {
+  useFetchPatientDetailsQuery,
+  useFetchUserDetailQuery,
+} from "../../api/user";
 import { BsPatchCheckFill } from "react-icons/bs";
 
 const ObservationInputCard = () => {
-  const { user } = useUserContext();
+  const { user, setUser } = useUserContext();
+  const { data: userData, refetch: fetchUserData } = useFetchUserDetailQuery();
+  useEffect(() => {
+    if (userData) {
+      setUser(userData);
+    }
+  }, [userData, setUser]);
+  useEffect(() => {
+    if (!user.name && !user.IC && user.isLoggedIn) {
+      fetchUserData();
+    }
+    if (!user.name && !user.IC) {
+      let performer = [
+        {
+          reference: `Practitioner/${user.address}`,
+          display: user.email,
+        },
+      ];
+
+      setFormData({
+        ...formData,
+        performer: performer,
+      });
+    }
+  }, [user, fetchUserData]);
+
   const emptyFormData: Observation & {
     account: string;
     patient: string;
@@ -391,7 +419,11 @@ const ObservationInputCard = () => {
                 placeholder="Reference"
                 name="reference"
                 // value={formData?.subject?.reference}
-                value={`Patient/${patientDetails?.primaryInfo?.address}`}
+                value={
+                  patientDetails
+                    ? `Patient/${patientDetails?.primaryInfo?.address}`
+                    : ""
+                }
                 disabled
               />
             </InputGroup>

@@ -8,8 +8,13 @@ import {
 } from "@chakra-ui/react";
 import { NAV_ITEMS } from "../../constants/path";
 import { useNavigate } from "react-router-dom";
+import { useUserContext } from "../../model/user/userContext";
 
 const NavBar = () => {
+  const { user, logoutUser } = useUserContext();
+
+  const isLoggedIn = user?.address && user?.email;
+
   const navigate = useNavigate();
   return (
     <Stack
@@ -22,8 +27,6 @@ const NavBar = () => {
       borderBottom={"solid"}
     >
       {NAV_ITEMS.map((navItem) => {
-        console.log(window.location.pathname === navItem.href);
-
         return (
           <Box key={navItem.label}>
             <Popover trigger={"hover"} placement="bottom-start">
@@ -47,6 +50,17 @@ const NavBar = () => {
           </Box>
         );
       })}
+      {isLoggedIn && (
+        <Box key="logout">
+          <Link
+            onClick={() => {
+              logoutUser();
+            }}
+          >
+            Log Out
+          </Link>
+        </Box>
+      )}
     </Stack>
   );
 };

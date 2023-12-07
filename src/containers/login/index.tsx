@@ -61,6 +61,7 @@ const Login = () => {
           setUnauthorizedMessage("");
           const { email, address } = response.data.data;
           const newUser = {
+            isLoggedIn: true,
             email: email,
             address: address,
           };

@@ -22,6 +22,7 @@ import { UserProvider, useUserContext } from "./model/user/userContext";
 import { CookiesProvider, useCookies } from "react-cookie";
 import Medications from "./containers/medications";
 import AddCondition from "./containers/add-condition";
+import Profile from "./containers/profile";
 
 function App() {
   const queryClient = new QueryClient();
@@ -121,6 +122,14 @@ function App() {
       element: (
         <ProtectedRoute>
           <AddCondition />
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: PATH.Profile,
+      element: (
+        <ProtectedRoute>
+          <Profile />
         </ProtectedRoute>
       ),
     },

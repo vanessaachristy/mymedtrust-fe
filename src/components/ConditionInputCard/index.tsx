@@ -13,6 +13,13 @@ import {
   Input,
   InputGroup,
   InputLeftElement,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
   NumberDecrementStepper,
   NumberIncrementStepper,
   NumberInput,
@@ -23,19 +30,130 @@ import {
   Stack,
   StackDivider,
   Text,
+  chakra,
 } from "@chakra-ui/react";
 import { Condition } from "fhir/r4";
 import { useEffect, useState } from "react";
-import { Form } from "react-router-dom";
+import { Form, useNavigate } from "react-router-dom";
 import { useUserContext } from "../../model/user/userContext";
 import { getCurrentDateTime, validateAddress } from "../../utils";
 import { useMutation } from "react-query";
 import axiosWithCredentials from "../../api/fetch";
 import { useFetchPatientDetailsQuery } from "../../api/user";
 import moment from "moment";
+import { BsPatchCheckFill } from "react-icons/bs";
 
 const ConditionInputCard = () => {
   const { user } = useUserContext();
+  const emptyFormData: Condition & {
+    account: string;
+    patient: string;
+    doctor: string;
+  } = {
+    account: user.address,
+    doctor: user.address,
+    patient: "",
+    resourceType: "Condition",
+    clinicalStatus: {
+      coding: [
+        {
+          system: "",
+          code: "",
+        },
+      ],
+    },
+    verificationStatus: {
+      coding: [
+        {
+          system: "",
+          code: "",
+        },
+      ],
+    },
+    category: [
+      {
+        coding: [
+          {
+            system: "",
+            code: "",
+            display: "",
+          },
+        ],
+      },
+    ],
+    severity: {
+      coding: [
+        {
+          system: "",
+          code: "",
+          display: "",
+        },
+      ],
+    },
+    code: {
+      coding: [
+        {
+          system: "",
+          code: "",
+          display: "",
+        },
+      ],
+    },
+    bodySite: [
+      {
+        coding: [
+          {
+            system: "",
+            code: "",
+            display: "",
+          },
+        ],
+      },
+    ],
+    subject: {
+      reference: "",
+      display: "",
+    },
+    encounter: {
+      reference: "",
+      display: "",
+    },
+    onsetDateTime: "",
+    abatementDateTime: "",
+    recordedDate: moment().format("YYYY-MM-DD HH:mm"),
+    recorder: {
+      reference: `Practitioner/${user.address}`,
+      display: user.email,
+    },
+    asserter: {
+      reference: `Practitioner/${user.address}`,
+      display: user.email,
+    },
+    evidence: [
+      {
+        code: [
+          {
+            coding: [
+              {
+                system: "",
+                code: "",
+                display: "",
+              },
+            ],
+          },
+        ],
+        detail: [
+          {
+            reference: "",
+            display: "",
+          },
+        ],
+      },
+    ],
+  };
+
+  const CBsPatchCheckFill = chakra(BsPatchCheckFill);
+
   const [formData, setFormData] = useState<
     Condition & { account: string; patient: string; doctor: string }
   >({
@@ -257,6 +375,15 @@ const ConditionInputCard = () => {
       </CardBody>
     </Card>
   );
+  const enum ClinicalStatusCode {
+    ACTIVE = "active",
+    RECURRENCE = "recurrence",
+    RELAPSE = "relapse",
+    INACTIVE = "inactive",
+    REMISSION = "remission",
+    RESOLVED = "resolved",
+    UNKNOWN = "unknown",
+  }
 
   const ClinicalStatus = (
     <Card>
@@ -269,60 +396,90 @@ const ConditionInputCard = () => {
         <Stack direction={"row"} spacing={4}>
           <FormControl isRequired>
             <FormLabel>System</FormLabel>
-            <InputGroup>
-              <Input
-                type="text"
-                placeholder="System"
-                name="system"
-                value={formData?.clinicalStatus?.coding?.[0].system}
-                onChange={(e) => {
-                  const { value } = e.target;
-                  const coding = formData?.clinicalStatus?.coding?.[0];
-                  setFormData({
-                    ...formData,
-                    clinicalStatus: {
-                      coding: [
-                        {
-                          ...coding,
-                          system: value,
-                        },
-                      ],
-                    },
-                  });
-                }}
-              />
-            </InputGroup>
+            <Select
+              placeholder="System"
+              name="system"
+              value={formData?.clinicalStatus?.coding?.[0].system}
+              onChange={(e) => {
+                const { value } = e.target;
+                const coding = formData?.clinicalStatus?.coding?.[0];
+                setFormData({
+                  ...formData,
+                  clinicalStatus: {
+                    coding: [
+                      {
+                        ...coding,
+                        system: value,
+                      },
+                    ],
+                  },
+                });
+              }}
+            >
+              <option value="http://terminology.hl7.org/CodeSystem/condition-clinical">
+                http://terminology.hl7.org/CodeSystem/condition-clinical
+              </option>
+            </Select>
           </FormControl>
           <FormControl isRequired>
             <FormLabel>Code</FormLabel>
-            <InputGroup>
-              <Input
-                type="text"
-                placeholder="Code"
-                name="code"
-                value={formData?.clinicalStatus?.coding?.[0].code}
-                onChange={(e) => {
-                  const { value } = e.target;
-                  const coding = formData?.clinicalStatus?.coding?.[0];
-                  setFormData({
-                    ...formData,
-                    clinicalStatus: {
-                      coding: [
-                        {
-                          ...coding,
-                          code: value,
-                        },
-                      ],
-                    },
-                  });
-                }}
-              />
-            </InputGroup>
+            <Select
+              placeholder="Code"
+              name="code"
+              value={formData?.clinicalStatus?.coding?.[0].code}
+              onChange={(e) => {
+                const { value } = e.target;
+                const coding = formData?.clinicalStatus?.coding?.[0];
+
+                setFormData({
+                  ...formData,
+                  clinicalStatus: {
+                    coding: [
+                      {
+                        ...coding,
+                        code: value,
+                      },
+                    ],
+                  },
+                });
+              }}
+            >
+              <option value={ClinicalStatusCode.ACTIVE}>
+                {ClinicalStatusCode.ACTIVE}
+              </option>
+              <option value={ClinicalStatusCode.RECURRENCE}>
+                {ClinicalStatusCode.RECURRENCE}
+              </option>{" "}
+              <option value={ClinicalStatusCode.INACTIVE}>
+                {ClinicalStatusCode.INACTIVE}
+              </option>
+              <option value={ClinicalStatusCode.RELAPSE}>
+                {ClinicalStatusCode.RELAPSE}
+              </option>{" "}
+              <option value={ClinicalStatusCode.REMISSION}>
+                {ClinicalStatusCode.REMISSION}
+              </option>
+              <option value={ClinicalStatusCode.RESOLVED}>
+                {ClinicalStatusCode.RESOLVED}
+              </option>
+              <option value={ClinicalStatusCode.UNKNOWN}>
+                {ClinicalStatusCode.UNKNOWN}
+              </option>
+            </Select>
           </FormControl>
         </Stack>
       </CardBody>
     </Card>
   );
+
+  const enum VerificationStatusCode {
+    UNCONFIRMED = "unconfirmed",
+    PROVISIONAL = "provisional",
+    DIFFERENTIAL = "differential",
+    CONFIRMED = "confirmed",
+    REFUTED = "refuted",
+    ENTERED_IN_ERROR = "entered-in-error",
+  }
 
   const VerificationStatus = (
     <Card>
@@ -335,55 +492,73 @@ const ConditionInputCard = () => {
         <Stack direction={"row"} spacing={4}>
           <FormControl isRequired>
             <FormLabel>System</FormLabel>
-            <InputGroup>
-              <Input
-                type="text"
-                placeholder="System"
-                name="system"
-                value={formData?.verificationStatus?.coding?.[0].system}
-                onChange={(e) => {
-                  const { value } = e.target;
-                  const coding = formData?.verificationStatus?.coding?.[0];
-                  setFormData({
-                    ...formData,
-                    verificationStatus: {
-                      coding: [
-                        {
-                          ...coding,
-                          system: value,
-                        },
-                      ],
-                    },
-                  });
-                }}
-              />
-            </InputGroup>
+            <Select
+              placeholder="System"
+              name="system"
+              value={formData?.verificationStatus?.coding?.[0].system}
+              onChange={(e) => {
+                const { value } = e.target;
+                const coding = formData?.verificationStatus?.coding?.[0];
+                setFormData({
+                  ...formData,
+                  verificationStatus: {
+                    coding: [
+                      {
+                        ...coding,
+                        system: value,
+                      },
+                    ],
+                  },
+                });
+              }}
+            >
+              <option value="http://terminology.hl7.org/CodeSystem/condition-ver-status">
+                http://terminology.hl7.org/CodeSystem/condition-ver-status
+              </option>
+            </Select>
           </FormControl>
           <FormControl isRequired>
             <FormLabel>Code</FormLabel>
-            <InputGroup>
-              <Input
-                type="text"
-                placeholder="Code"
-                name="code"
-                value={formData?.verificationStatus?.coding?.[0].code}
-                onChange={(e) => {
-                  const { value } = e.target;
-                  const coding = formData?.verificationStatus?.coding?.[0];
-                  setFormData({
-                    ...formData,
-                    verificationStatus: {
-                      coding: [
-                        {
-                          ...coding,
-                          code: value,
-                        },
-                      ],
-                    },
-                  });
-                }}
-              />
-            </InputGroup>
+
+            <Select
+              placeholder="Code"
+              name="code"
+              value={formData?.verificationStatus?.coding?.[0].code}
+              onChange={(e) => {
+                const { value } = e.target;
+                const coding = formData?.verificationStatus?.coding?.[0];
+                setFormData({
+                  ...formData,
+                  verificationStatus: {
+                    coding: [
+                      {
+                        ...coding,
+                        code: value,
+                      },
+                    ],
+                  },
+                });
+              }}
+            >
+              <option value={VerificationStatusCode.CONFIRMED}>
+                {VerificationStatusCode.CONFIRMED}
+              </option>
+              <option value={VerificationStatusCode.DIFFERENTIAL}>
+                {VerificationStatusCode.DIFFERENTIAL}
+              </option>{" "}
+              <option value={VerificationStatusCode.ENTERED_IN_ERROR}>
+                {VerificationStatusCode.ENTERED_IN_ERROR}
+              </option>
+              <option value={VerificationStatusCode.PROVISIONAL}>
+                {VerificationStatusCode.PROVISIONAL}
+              </option>{" "}
+              <option value={VerificationStatusCode.REFUTED}>
+                {VerificationStatusCode.REFUTED}
+              </option>
+              <option value={VerificationStatusCode.UNCONFIRMED}>
+                {VerificationStatusCode.UNCONFIRMED}
+              </option>
+            </Select>
           </FormControl>
         </Stack>
       </CardBody>
@@ -401,31 +576,32 @@ const ConditionInputCard = () => {
         <Stack direction={"row"} spacing={4}>
           <FormControl isRequired>
             <FormLabel>System</FormLabel>
-            <InputGroup>
-              <Input
-                type="text"
-                placeholder="System"
-                name="system"
-                value={formData?.category?.[0]?.coding?.[0].system}
-                onChange={(e) => {
-                  const { value } = e.target;
-                  const coding = formData?.category?.[0]?.coding?.[0];
-                  setFormData({
-                    ...formData,
-                    category: [
-                      {
-                        coding: [
-                          {
-                            ...coding,
-                            system: value,
-                          },
-                        ],
-                      },
-                    ],
-                  });
-                }}
-              />
-            </InputGroup>
+            <Select
+              placeholder="System"
+              name="system"
+              value={formData?.category?.[0]?.coding?.[0].system}
+              onChange={(e) => {
+                const { value } = e.target;
+                const coding = formData?.category?.[0]?.coding?.[0];
+                setFormData({
+                  ...formData,
+                  category: [
+                    {
+                      coding: [
+                        {
+                          ...coding,
+                          system: value,
+                        },
+                      ],
+                    },
+                  ],
+                });
+              }}
+            >
+              <option value="http://terminology.hl7.org/CodeSystem/condition-category">
+                http://terminology.hl7.org/CodeSystem/condition-category
+              </option>
+            </Select>
           </FormControl>
           <FormControl isRequired>
             <FormLabel>Code</FormLabel>
@@ -497,7 +673,7 @@ const ConditionInputCard = () => {
       </CardHeader>
       <CardBody>
         <Stack direction={"row"} spacing={4}>
-          <FormControl isRequired>
+          <FormControl>
             <FormLabel>System</FormLabel>
             <InputGroup>
               <Input
@@ -523,7 +699,7 @@ const ConditionInputCard = () => {
               />
             </InputGroup>
           </FormControl>
-          <FormControl isRequired>
+          <FormControl>
             <FormLabel>Code</FormLabel>
             <InputGroup>
               <Input
@@ -549,7 +725,7 @@ const ConditionInputCard = () => {
               />
             </InputGroup>
           </FormControl>
-          <FormControl isRequired>
+          <FormControl>
             <FormLabel>Display</FormLabel>
             <InputGroup>
               <Input
@@ -591,29 +767,30 @@ const ConditionInputCard = () => {
         <Stack direction={"row"} spacing={4}>
           <FormControl isRequired>
             <FormLabel>System</FormLabel>
-            <InputGroup>
-              <Input
-                type="text"
-                placeholder="System"
-                name="system"
-                value={formData?.code?.coding?.[0].system}
-                onChange={(e) => {
-                  const { value } = e.target;
-                  const coding = formData?.code?.coding?.[0];
-                  setFormData({
-                    ...formData,
-                    code: {
-                      coding: [
-                        {
-                          ...coding,
-                          system: value,
-                        },
-                      ],
-                    },
-                  });
-                }}
-              />
-            </InputGroup>
+            <Select
+              placeholder="System"
+              name="system"
+              value={formData?.code?.coding?.[0].system}
+              onChange={(e) => {
+                const { value } = e.target;
+                const coding = formData?.code?.coding?.[0];
+                setFormData({
+                  ...formData,
+                  code: {
+                    coding: [
+                      {
+                        ...coding,
+                        system: value,
+                      },
+                    ],
+                  },
+                });
+              }}
+            >
+              <option value="http://snomed.info/sct">
+                http://snomed.info/sct
+              </option>
+            </Select>
           </FormControl>
           <FormControl isRequired>
             <FormLabel>Code</FormLabel>
@@ -681,7 +858,7 @@ const ConditionInputCard = () => {
       </CardHeader>
       <CardBody>
         <Stack direction={"row"} spacing={4}>
-          <FormControl isRequired>
+          <FormControl>
             <FormLabel>System</FormLabel>
             <InputGroup>
               <Input
@@ -709,7 +886,7 @@ const ConditionInputCard = () => {
               />
             </InputGroup>
           </FormControl>
-          <FormControl isRequired>
+          <FormControl>
             <FormLabel>Code</FormLabel>
             <InputGroup>
               <Input
@@ -737,7 +914,7 @@ const ConditionInputCard = () => {
               />
             </InputGroup>
           </FormControl>
-          <FormControl isRequired>
+          <FormControl>
             <FormLabel>Display</FormLabel>
             <InputGroup>
               <Input
@@ -910,12 +1087,15 @@ const ConditionInputCard = () => {
     console.log(formData);
   }, [formData]);
 
+  const [addResponse, setAddResponse] = useState<any>(null);
+
   const addConditionMutation = useMutation({
     mutationFn: (data: any) => {
       return axiosWithCredentials
         .post("/record/condition/create", data)
         .then(function (response) {
-          console.log(response);
+          console.log(response.data);
+          setAddResponse(response.data?.data);
         })
         .catch(function (error) {
           throw new Error();
@@ -924,14 +1104,37 @@ const ConditionInputCard = () => {
   });
 
   const handleSubmitForm = () => {
-    setFormData({
+    console.log(
+      JSON.stringify({
+        ...formData,
+        recordedDate: moment().format("YYYY-MM-DD HH:mm"),
+      })
+    );
+    addConditionMutation.mutate({
       ...formData,
       recordedDate: moment().format("YYYY-MM-DD HH:mm"),
     });
-    console.log(JSON.stringify(formData));
-    addConditionMutation.mutate(formData);
   };
 
+  const [modalOpen, setModalOpen] = useState(false);
+  const handleCloseModal = () => {
+    setFormData(emptyFormData);
+    setModalOpen(false);
+  };
+
+  useEffect(() => {
+    if (addConditionMutation.isSuccess && !addConditionMutation.isError) {
+      setModalOpen(true);
+    }
+  }, [addConditionMutation.isSuccess, addConditionMutation.isError]);
+
+  const navigate = useNavigate();
+
+  const handleToConditionList = () => {
+    navigate("/conditions", {
+      replace: true,
+    });
+  };
   return (
     <div className="w-[80vw]">
       <Form
@@ -974,12 +1177,32 @@ const ConditionInputCard = () => {
           </Alert>
         )}
 
-        {addConditionMutation.isSuccess && !addConditionMutation.isError && (
-          <Alert status="success">
-            <AlertIcon />
-            <AlertTitle>Add successful!</AlertTitle>
-          </Alert>
-        )}
+        <Modal isOpen={modalOpen} onClose={handleCloseModal}>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader textAlign={"center"}>
+              Condition successfully added!
+            </ModalHeader>
+            <ModalBody className="flex flex-col justify-center items-center">
+              <CBsPatchCheckFill color={"green.300"} size={150} />
+              <Text size={"sm"} paddingTop={"6"}>
+                ID: {addResponse?.["dataID"]}
+              </Text>
+              <Text size={"sm"}>{addResponse?.["timestamp"]}</Text>
+            </ModalBody>
+            <ModalCloseButton />
+            <ModalBody></ModalBody>
+
+            <ModalFooter>
+              <Button variant="ghost" mr={3} onClick={handleCloseModal}>
+                Close
+              </Button>
+              <Button variant="solid" onClick={handleToConditionList}>
+                Go to Conditions
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
       </Form>
     </div>
   );

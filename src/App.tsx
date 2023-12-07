@@ -38,7 +38,6 @@ function App() {
       setAuthenticated(false);
     }
   }, [cookies]);
-  const { user } = useUserContext();
 
   const ProtectedRoute = ({ children }: any) => {
     if (!authenticated) {

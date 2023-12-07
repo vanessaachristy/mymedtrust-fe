@@ -13,6 +13,13 @@ import {
   Input,
   InputGroup,
   InputLeftElement,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
   NumberDecrementStepper,
   NumberIncrementStepper,
   NumberInput,
@@ -23,18 +30,76 @@ import {
   Stack,
   StackDivider,
   Text,
+  chakra,
 } from "@chakra-ui/react";
 import { Observation } from "fhir/r4";
 import { useEffect, useState } from "react";
-import { Form } from "react-router-dom";
+import { Form, useNavigate } from "react-router-dom";
 import { useUserContext } from "../../model/user/userContext";
 import { getCurrentDateTime, validateAddress } from "../../utils";
 import { useMutation } from "react-query";
 import axiosWithCredentials from "../../api/fetch";
 import { useFetchPatientDetailsQuery } from "../../api/user";
+import { BsPatchCheckFill } from "react-icons/bs";
 
 const ObservationInputCard = () => {
   const { user } = useUserContext();
+  const emptyFormData: Observation & {
+    account: string;
+    patient: string;
+    doctor: string;
+  } = {
+    account: user.address,
+    doctor: user.address,
+    patient: "",
+    resourceType: "Observation",
+    status: "unknown",
+    code: {
+      coding: [
+        {
+          system: "",
+          code: "",
+          display: "",
+        },
+      ],
+    },
+    subject: {
+      reference: "",
+      display: "",
+    },
+    effectiveDateTime: getCurrentDateTime(),
+    issued: getCurrentDateTime(),
+    performer: [
+      {
+        reference: `Practitioner/${user.address}`,
+        display: user.email,
+      },
+    ],
+    valueQuantity: {
+      value: 0,
+      unit: "",
+      system: "http://unitsofmeasure.org",
+      code: "",
+    },
+    interpretation: [],
+    referenceRange: [
+      {
+        low: {
+          value: 0,
+          unit: "",
+          system: "http://unitsofmeasure.org",
+          code: "",
+        },
+        high: {
+          value: 0,
+          unit: "",
+          system: "http://unitsofmeasure.org",
+          code: "",
+        },
+      },
+    ],
+  };
+
   const [formData, setFormData] = useState<
     Observation & { account: string; patient: string; doctor: string }
   >({
@@ -644,12 +709,15 @@ const ObservationInputCard = () => {
     </Card>
   );
 
+  const [addResponse, setAddResponse] = useState<any>(null);
+
   const addObservationMutation = useMutation({
     mutationFn: (data: any) => {
       return axiosWithCredentials
         .post("/record/observation/create", data)
         .then(function (response) {
           console.log(response);
+          setAddResponse(response.data?.data);
         })
         .catch(function (error) {
           throw new Error();
@@ -660,6 +728,28 @@ const ObservationInputCard = () => {
   const handleSubmitForm = () => {
     console.log(JSON.stringify(formData));
     addObservationMutation.mutate(formData);
+  };
+
+  const CBsPatchCheckFill = chakra(BsPatchCheckFill);
+
+  const [modalOpen, setModalOpen] = useState(false);
+  const handleCloseModal = () => {
+    setFormData(emptyFormData);
+    setModalOpen(false);
+  };
+
+  useEffect(() => {
+    if (addObservationMutation.isSuccess && !addObservationMutation.isError) {
+      setModalOpen(true);
+    }
+  }, [addObservationMutation.isSuccess, addObservationMutation.isError]);
+
+  const navigate = useNavigate();
+
+  const handleToObservationList = () => {
+    navigate("/observations", {
+      replace: true,
+    });
   };
 
   return (
@@ -700,12 +790,32 @@ const ObservationInputCard = () => {
         </Alert>
       )}
 
-      {addObservationMutation.isSuccess && !addObservationMutation.isError && (
-        <Alert status="success">
-          <AlertIcon />
-          <AlertTitle>Add successful!</AlertTitle>
-        </Alert>
-      )}
+      <Modal isOpen={modalOpen} onClose={handleCloseModal}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader textAlign={"center"}>
+            Observations successfully added!
+          </ModalHeader>
+          <ModalBody className="flex flex-col justify-center items-center">
+            <CBsPatchCheckFill color={"green.300"} size={150} />
+            <Text size={"sm"} paddingTop={"6"}>
+              ID: {addResponse?.["dataID"]}
+            </Text>
+            <Text size={"sm"}>{addResponse?.["timestamp"]}</Text>
+          </ModalBody>
+          <ModalCloseButton />
+          <ModalBody></ModalBody>
+
+          <ModalFooter>
+            <Button variant="ghost" mr={3} onClick={handleCloseModal}>
+              Close
+            </Button>
+            <Button variant="solid" onClick={handleToObservationList}>
+              Go to Observations
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </div>
   );
 };

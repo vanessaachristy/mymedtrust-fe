@@ -18,3 +18,21 @@ export function validateAddress(address: string) {
   const regex = /^0x[0-9a-fA-F]{40}$/;
   return regex.test(address);
 }
+/**
+ *
+ * @param timestamp i.e. "MON NOV 13 2023 22:31:35 GMT+0800 (GMT+08:00)"
+ */
+export function convertDatetimeString(timestamp: string) {
+  const date = new Date(timestamp);
+
+  const formattedDate = date.toLocaleString("en-US", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+
+  return formattedDate;
+}

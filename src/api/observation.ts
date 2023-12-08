@@ -5,13 +5,13 @@ import axiosWithCredentials from "./fetch"
 const transformObservation = (res: any) => {
     return res.data.map((d: any) => d.data) as any[];
 }
-export const useGetObservationsQuery = () => {
+export const useGetObservationsQuery = (patientAddress: string) => {
     return useQuery(
         {
-            queryKey: "getObservation",
+            queryKey: ["getObservation", patientAddress],
             queryFn: async () => {
                 try {
-                    const response = await axiosWithCredentials.get('/record/observation/patient/0x8Dd02DF718aC13B7502AC421a28265aC6A9631fF');
+                    const response = await axiosWithCredentials.get(`/record/observation/patient/${patientAddress}`);
                     return response.data;
                 } catch (error) {
                     throw new Error();
@@ -22,3 +22,4 @@ export const useGetObservationsQuery = () => {
         }
     )
 }
+

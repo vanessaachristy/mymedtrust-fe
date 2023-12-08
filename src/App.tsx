@@ -41,6 +41,17 @@ function App() {
   }, [cookies]);
 
   const ProtectedRoute = ({ children }: any) => {
+    const { user, setUser } = useUserContext();
+    useEffect(() => {
+      if (authenticated) {
+        console.log("Authhh");
+        setUser({
+          ...user,
+          isLoggedIn: true,
+        });
+      }
+    }, [authenticated]);
+
     if (!authenticated) {
       return <Navigate to={"/login"} replace />;
     }

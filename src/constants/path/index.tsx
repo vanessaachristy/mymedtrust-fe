@@ -1,3 +1,5 @@
+import { UserType } from "../user";
+
 export const enum PATH {
   Home = "/",
   Login = "/login",
@@ -12,7 +14,12 @@ export const enum PATH {
   Profile = "/profile",
 }
 
-export const NAV_ITEMS = [
+export type NavItems = {
+  label: string;
+  href: PATH;
+};
+
+export const PATIENT_NAV: NavItems[] = [
   {
     label: "Home",
     href: PATH.Home,
@@ -33,9 +40,12 @@ export const NAV_ITEMS = [
     label: "Medications",
     href: PATH.Medications,
   },
+];
+
+export const DOCTOR_NAV: NavItems[] = [
   {
-    label: "Whitelist",
-    href: PATH.Whitelist,
+    label: "Home",
+    href: PATH.Home,
   },
   {
     label: "Add Observation",
@@ -45,6 +55,16 @@ export const NAV_ITEMS = [
     label: "Add Condition",
     href: PATH.AddCondition,
   },
+];
+
+export const ADMIN_NAV: NavItems[] = [
+  {
+    label: "Home",
+    href: PATH.Home,
+  },
+];
+
+export const PROFILE_NAV: NavItems[] = [
   {
     label: "Profile",
     href: PATH.Profile,

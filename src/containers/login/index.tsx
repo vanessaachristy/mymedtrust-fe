@@ -90,7 +90,7 @@ const Login = () => {
 
   useEffect(() => {
     if (loginMutation.isSuccess && !loginMutation.isError) {
-      navigate("/observations/add", {
+      navigate("/", {
         replace: true,
       });
     }

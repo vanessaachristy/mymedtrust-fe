@@ -56,10 +56,10 @@ function App() {
       return <Navigate to={"/login"} replace />;
     }
     return (
-      <>
+      <div className="flex">
         <NavBar />
         {children}
-      </>
+      </div>
     );
   };
 

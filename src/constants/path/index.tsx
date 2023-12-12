@@ -1,5 +1,3 @@
-import { UserType } from "../user";
-
 export const enum PATH {
   Home = "/",
   Login = "/login",

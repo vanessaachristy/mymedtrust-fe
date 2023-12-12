@@ -13,7 +13,7 @@ const MedicationCard = ({ data }: ConditionCardProps) => {
   const CGiMedicinePills = chakra(GiMedicinePills);
 
   return (
-    <div className="w-[60%]">
+    <div className="w-full">
       <FhirResource
         fhirResource={data}
         fhirVersion={fhirVersions.R4}

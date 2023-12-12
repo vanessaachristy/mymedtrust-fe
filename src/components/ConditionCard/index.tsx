@@ -13,7 +13,7 @@ const ConditionCard = ({ data }: ConditionCardProps) => {
   const CFaFileMedicalAlt = chakra(FaFileMedicalAlt);
 
   return (
-    <div className="w-[60%]">
+    <div className="w-full">
       <FhirResource
         fhirResource={data}
         fhirVersion={fhirVersions.R4}

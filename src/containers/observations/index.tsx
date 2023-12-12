@@ -4,6 +4,7 @@ import { useUserContext } from "../../model/user/userContext";
 import { useGetObservationsQuery } from "../../api/observation";
 import { Observation } from "fhir/r4";
 import { Heading, Spinner } from "@chakra-ui/react";
+import { renderComponent } from "../../utils/renderComponent";
 
 const Observations = () => {
   const { user } = useUserContext();
@@ -20,21 +21,24 @@ const Observations = () => {
     }
   }, [user, fetchObservations]);
   return (
-    <div className="flex flex-col items-center justify-center p-6">
+    <div className="flex flex-col items-center justify-start p-6 w-full">
       <Heading color="blue.500">Observation</Heading>
-      {isLoading ? (
-        <Spinner
-          thickness="4px"
-          speed="0.65s"
-          emptyColor="gray.200"
-          color="blue.500"
-          size="xl"
-        />
-      ) : (
-        observationsList?.map((item: Observation) => {
-          return <ObservationCard data={item} />;
-        })
-      )}
+      {renderComponent({
+        loading: {
+          isLoading: isLoading,
+        },
+        error: {
+          isError: isError,
+          onErrorRetry: fetchObservations,
+        },
+        component: (
+          <div className="w-[90%]">
+            {observationsList?.map((item: Observation) => {
+              return <ObservationCard data={item} />;
+            })}
+          </div>
+        ),
+      })}
     </div>
   );
 };

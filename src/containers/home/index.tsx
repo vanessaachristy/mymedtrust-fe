@@ -11,15 +11,12 @@ import {
   Heading,
   Stack,
   Table,
-  TableCaption,
   TableContainer,
   Tbody,
   Td,
-  Tfoot,
   Th,
   Thead,
   Tr,
-  background,
   chakra,
 } from "@chakra-ui/react";
 import { User } from "../../types";
@@ -42,6 +39,8 @@ import { useNavigate } from "react-router-dom";
 import { useGetObservationsQuery } from "../../api/observation";
 import { convertDatetimeString } from "../../utils";
 import { useGetConditionQuery } from "../../api/condition";
+import { useGetAllergyQuery } from "../../api/allergy";
+import { useGetMedicationQuery } from "../../api/medication";
 
 type DashboardProps = {
   user: User;
@@ -419,6 +418,104 @@ const PatientDashboard = ({ user }: DashboardProps) => {
     </TableContainer>
   );
 
+  const {
+    data: medicationList,
+    isLoading: isMedicationListLoading,
+    isError: isMedicationListError,
+    refetch: fetchMedications,
+  } = useGetMedicationQuery(user?.address);
+
+  useEffect(() => {
+    if (user?.address) {
+      fetchMedications();
+    }
+  }, [user, fetchMedications]);
+
+  const medicationsTable = (
+    <TableContainer width={"100%"}>
+      <Table variant="simple" size="sm">
+        <Thead>
+          <Tr>
+            <Th>Date</Th>
+            <Th>Name</Th>
+            <Th>Form</Th>
+          </Tr>
+        </Thead>
+        <Tbody>
+          {medicationList
+            ?.slice(0, 5)
+            ?.sort((a, b) => Date.parse(b.timestamp) - Date.parse(a.timestamp))
+            ?.map((item: any, index: number) => {
+              return (
+                <Tr
+                  style={{
+                    backgroundColor: index % 2 === 0 ? "#e3edfc" : "unset",
+                  }}
+                >
+                  <Td>{convertDatetimeString(item.timestamp.toString())}</Td>
+                  <Td>{item.code?.coding?.[0]?.display}</Td>
+                  <Td>
+                    <Badge colorScheme="blue">
+                      {item?.form?.coding?.[0]?.display}
+                    </Badge>
+                  </Td>
+                </Tr>
+              );
+            })}
+        </Tbody>
+      </Table>
+    </TableContainer>
+  );
+
+  const {
+    data: allergyList,
+    isLoading: isAllergyListLoading,
+    isError: isAllergyListError,
+    refetch: fetchAllergies,
+  } = useGetAllergyQuery(user?.address);
+
+  useEffect(() => {
+    if (user?.address) {
+      fetchAllergies();
+    }
+  }, [user, fetchAllergies]);
+
+  const allergiesTable = (
+    <TableContainer width={"100%"}>
+      <Table variant="simple" size="sm">
+        <Thead>
+          <Tr>
+            <Th>Date</Th>
+            <Th>Name</Th>
+            <Th>Clinical Status</Th>
+          </Tr>
+        </Thead>
+        <Tbody>
+          {allergyList
+            ?.slice(0, 5)
+            ?.sort((a, b) => Date.parse(b.timestamp) - Date.parse(a.timestamp))
+            ?.map((item: any, index: number) => {
+              return (
+                <Tr
+                  style={{
+                    backgroundColor: index % 2 === 0 ? "#e3edfc" : "unset",
+                  }}
+                >
+                  <Td>{convertDatetimeString(item.timestamp.toString())}</Td>
+                  <Td>{item.code?.coding?.[0]?.display}</Td>
+                  <Td>
+                    <Badge colorScheme="blue">
+                      {item?.clinicalStatus?.coding?.[0]?.code}
+                    </Badge>
+                  </Td>
+                </Tr>
+              );
+            })}
+        </Tbody>
+      </Table>
+    </TableContainer>
+  );
+
   const navigate = useNavigate();
   return (
     <Stack
@@ -540,17 +637,17 @@ const PatientDashboard = ({ user }: DashboardProps) => {
             </Stack>
             {renderComponent({
               loading: {
-                isLoading: isConditionListLoading,
+                isLoading: isMedicationListLoading,
                 style: {
                   width: "100%",
                   height: "160px",
                 },
               },
               error: {
-                isError: isConditionListError,
-                onErrorRetry: fetchConditions,
+                isError: isMedicationListError,
+                onErrorRetry: fetchMedications,
               },
-              component: conditionsTable,
+              component: medicationsTable,
             })}
           </CardBody>
         </Card>
@@ -582,17 +679,17 @@ const PatientDashboard = ({ user }: DashboardProps) => {
             </Stack>
             {renderComponent({
               loading: {
-                isLoading: isConditionListLoading,
+                isLoading: isAllergyListLoading,
                 style: {
                   width: "100%",
                   height: "160px",
                 },
               },
               error: {
-                isError: isConditionListError,
-                onErrorRetry: fetchConditions,
+                isError: isAllergyListError,
+                onErrorRetry: fetchAllergies,
               },
-              component: conditionsTable,
+              component: allergiesTable,
             })}
           </CardBody>
         </Card>

@@ -22,7 +22,7 @@ const Conditions = () => {
   }, [user, fetchConditions]);
 
   return (
-    <div className="flex flex-col items-center justify-center p-6">
+    <div className="flex flex-col items-center justify-start p-6 w-full">
       <Heading color="blue.500">Conditions</Heading>
       {renderComponent({
         loading: {
@@ -32,9 +32,13 @@ const Conditions = () => {
           isError: isError,
           onErrorRetry: fetchConditions,
         },
-        component: conditionList?.map((item: Condition) => {
-          return <ConditionCard data={item} />;
-        }),
+        component: (
+          <div className="w-[90%]">
+            {conditionList?.map((item: Condition) => {
+              return <ConditionCard data={item} />;
+            })}
+          </div>
+        ),
       })}
     </div>
   );

@@ -380,6 +380,16 @@ const ConditionInputCard = () => {
                     : "Patient"
                 }
                 disabled
+                onChange={(e) => {
+                  const { value } = e.target;
+                  setFormData({
+                    ...formData,
+                    subject: {
+                      ...formData?.subject,
+                      reference: value,
+                    },
+                  });
+                }}
               />
             </InputGroup>
           </FormControl>
@@ -399,6 +409,16 @@ const ConditionInputCard = () => {
                       : ""
                   }
                   disabled
+                  onChange={(e) => {
+                    const { value } = e.target;
+                    setFormData({
+                      ...formData,
+                      subject: {
+                        ...formData?.subject,
+                        display: value,
+                      },
+                    });
+                  }}
                 />
               )}
             </InputGroup>
@@ -1163,9 +1183,7 @@ const ConditionInputCard = () => {
   const navigate = useNavigate();
 
   const handleToConditionList = () => {
-    navigate("/conditions", {
-      replace: true,
-    });
+    navigate("/conditions");
   };
   return (
     <div className="w-[80vw]">

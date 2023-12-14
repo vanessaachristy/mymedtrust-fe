@@ -5,7 +5,7 @@ import ConditionInputCard from "../../components/ConditionInputCard";
 
 const AddCondition = () => {
   return (
-    <div className="flex flex-col items-center justify-center p-6">
+    <div className="flex flex-col items-center justify-start p-6 w-full">
       <Heading color="blue.500">Add Condition</Heading>
       <ConditionInputCard />;
     </div>

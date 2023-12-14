@@ -47,6 +47,7 @@ const fetchUserDetails = async () => {
         return res.data;
     } catch (error) {
         throw new Error();
+
     }
 }
 export const useFetchUserDetailQuery = () => {
@@ -69,8 +70,13 @@ const fetchPatientDetails = async (patientAddress: string) => {
         console.log("Addresss", patientAddress)
         const response = await axiosWithCredentials.get(`/patient/${patientAddress}`);
         return response.data;
-    } catch (error) {
-        throw new Error();
+    } catch (error: any) {
+        console.log(error.response?.status)
+        if (error?.response?.status === 400) {
+            throw new Error(error.response?.data?.error);
+        } else {
+            throw new Error('An error occurred while fetching patient data.');
+        }
     }
 };
 
@@ -81,8 +87,11 @@ export const useFetchPatientDetailsQuery = (patientAddress: string) => {
         async () => await fetchPatientDetails(patientAddress),
         {
             select: transformPatientDetails,
-            enabled: false
-        }
+            enabled: false,
+            onError: (error) => {
+                return error as any;
+            }
+        },
 
     );
 };

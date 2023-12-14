@@ -23,6 +23,8 @@ import { CookiesProvider, useCookies } from "react-cookie";
 import Medications from "./containers/medications";
 import AddCondition from "./containers/add-condition";
 import Profile from "./containers/profile";
+import AddAllergy from "./containers/add-allergy";
+import AddMedication from "./containers/add-medication";
 
 function App() {
   const queryClient = new QueryClient();
@@ -133,6 +135,22 @@ function App() {
       element: (
         <ProtectedRoute>
           <AddCondition />
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: PATH.AddAllergy,
+      element: (
+        <ProtectedRoute>
+          <AddAllergy />
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: PATH.AddMedication,
+      element: (
+        <ProtectedRoute>
+          <AddMedication />
         </ProtectedRoute>
       ),
     },

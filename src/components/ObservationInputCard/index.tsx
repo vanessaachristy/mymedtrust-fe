@@ -779,9 +779,7 @@ const ObservationInputCard = () => {
   const navigate = useNavigate();
 
   const handleToObservationList = () => {
-    navigate("/observations", {
-      replace: true,
-    });
+    navigate("/observations");
   };
 
   return (

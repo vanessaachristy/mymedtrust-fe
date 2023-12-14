@@ -9,6 +9,8 @@ export const enum PATH {
   Whitelist = "/whitelist",
   AddObservation = "/observations/add",
   AddCondition = "/conditions/add",
+  AddAllergy = "/allergy/add",
+  AddMedication = "/medications/add",
   Profile = "/profile",
 }
 
@@ -52,6 +54,14 @@ export const DOCTOR_NAV: NavItems[] = [
   {
     label: "Add Condition",
     href: PATH.AddCondition,
+  },
+  {
+    label: "Add Allergy",
+    href: PATH.AddAllergy,
+  },
+  {
+    label: "Add Medication",
+    href: PATH.AddMedication,
   },
 ];
 

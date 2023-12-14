@@ -241,9 +241,7 @@ const DoctorDashboard = ({ user }: DashboardProps) => {
                 size="md"
                 colorScheme="blue"
                 onClick={() => {
-                  navigate("/observations/add", {
-                    replace: true,
-                  });
+                  navigate("/observations/add");
                 }}
               >
                 Add Observation
@@ -262,9 +260,7 @@ const DoctorDashboard = ({ user }: DashboardProps) => {
                 size="md"
                 colorScheme="blue"
                 onClick={() => {
-                  navigate("/conditions/add", {
-                    replace: true,
-                  });
+                  navigate("/conditions/add");
                 }}
               >
                 Add Condition
@@ -283,9 +279,7 @@ const DoctorDashboard = ({ user }: DashboardProps) => {
                 size="md"
                 colorScheme="blue"
                 onClick={() => {
-                  navigate("/medications/add", {
-                    replace: true,
-                  });
+                  navigate("/medications/add");
                 }}
               >
                 Add Medication
@@ -303,7 +297,13 @@ const DoctorDashboard = ({ user }: DashboardProps) => {
                 <AllergyIcon color="blue.500" size="80px" />
                 <Heading size="md">Allergy</Heading>
               </Stack>
-              <Button size="md" colorScheme="blue">
+              <Button
+                size="md"
+                colorScheme="blue"
+                onClick={() => {
+                  navigate("/allergy/add");
+                }}
+              >
                 Add Allergy
               </Button>
             </Stack>
@@ -543,9 +543,7 @@ const PatientDashboard = ({ user }: DashboardProps) => {
                 size="sm"
                 colorScheme="blue"
                 onClick={() => {
-                  navigate("/observations", {
-                    replace: true,
-                  });
+                  navigate("/observations");
                 }}
               >
                 Browse All
@@ -585,9 +583,7 @@ const PatientDashboard = ({ user }: DashboardProps) => {
                 size="sm"
                 colorScheme="blue"
                 onClick={() => {
-                  navigate("/conditions", {
-                    replace: true,
-                  });
+                  navigate("/conditions");
                 }}
               >
                 Browse All
@@ -627,9 +623,7 @@ const PatientDashboard = ({ user }: DashboardProps) => {
                 size="sm"
                 colorScheme="blue"
                 onClick={() => {
-                  navigate("/medications", {
-                    replace: true,
-                  });
+                  navigate("/medications");
                 }}
               >
                 Browse All
@@ -669,9 +663,7 @@ const PatientDashboard = ({ user }: DashboardProps) => {
                 size="sm"
                 colorScheme="blue"
                 onClick={() => {
-                  navigate("/allergies", {
-                    replace: true,
-                  });
+                  navigate("/allergies");
                 }}
               >
                 Browse All

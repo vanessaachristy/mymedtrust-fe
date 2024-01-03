@@ -25,6 +25,7 @@ import AddCondition from "./containers/add-condition";
 import Profile from "./containers/profile";
 import AddAllergy from "./containers/add-allergy";
 import AddMedication from "./containers/add-medication";
+import { customizedTheme } from "./theme";
 
 function App() {
   const queryClient = new QueryClient();
@@ -58,9 +59,9 @@ function App() {
       return <Navigate to={"/login"} replace />;
     }
     return (
-      <div className="flex">
+      <div className="flex bg-primaryBlue-500 h-screen">
         <NavBar />
-        {children}
+        <div className="overflow-y-scroll w-full">{children}</div>
       </div>
     );
   };
@@ -168,7 +169,7 @@ function App() {
     <UserProvider>
       <CookiesProvider>
         <QueryClientProvider client={queryClient}>
-          <ChakraProvider>
+          <ChakraProvider theme={customizedTheme}>
             <RouterProvider router={router} />
           </ChakraProvider>
         </QueryClientProvider>

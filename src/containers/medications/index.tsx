@@ -23,7 +23,7 @@ const Medications = () => {
 
   return (
     <div className="flex flex-col items-center justify-start p-6 w-full">
-      <Heading color="blue.500">Medication</Heading>
+      <Heading color="yellow.200">Medication</Heading>
       {renderComponent({
         loading: {
           isLoading: isLoading,

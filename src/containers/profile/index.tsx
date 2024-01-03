@@ -70,7 +70,7 @@ const Profile = () => {
   }, [hasCopied]);
 
   return (
-    <div className="flex flex-col items-center p-6 bg-blue-950 min-h-screen">
+    <div className="flex flex-col items-center p-6min-h-screen">
       <Heading color="white" padding={4}>
         Profile
       </Heading>

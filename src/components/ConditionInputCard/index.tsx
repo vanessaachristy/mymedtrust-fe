@@ -1186,7 +1186,7 @@ const ConditionInputCard = () => {
     navigate("/conditions");
   };
   return (
-    <div className="w-[80vw]">
+    <div className="w-[70%]">
       <Form
         className="w-full flex flex-col justify-center"
         onSubmit={handleSubmitForm}

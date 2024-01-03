@@ -23,7 +23,7 @@ const Conditions = () => {
 
   return (
     <div className="flex flex-col items-center justify-start p-6 w-full">
-      <Heading color="blue.500">Conditions</Heading>
+      <Heading color="yellow.200">Conditions</Heading>
       {renderComponent({
         loading: {
           isLoading: isLoading,

@@ -1220,7 +1220,7 @@ const AllergyInputCard = () => {
   };
 
   return (
-    <div>
+    <div className="w-[70%]">
       <Form
         onSubmit={handleSubmitForm}
         className="w-full flex flex-col justify-center"

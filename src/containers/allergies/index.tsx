@@ -23,7 +23,7 @@ const Allergies = () => {
 
   return (
     <div className="flex flex-col items-center justify-start p-6 w-full">
-      <Heading color="blue.500">Allergies</Heading>
+      <Heading color="yellow.200">Allergies</Heading>
       {renderComponent({
         loading: {
           isLoading: isLoading,

@@ -18,6 +18,7 @@ import {
   Thead,
   Tr,
   chakra,
+  Text,
 } from "@chakra-ui/react";
 import { User } from "../../types";
 import { FaUserInjured } from "react-icons/fa6";
@@ -86,7 +87,11 @@ const DoctorDashboard = ({ user }: DashboardProps) => {
       paddingY={6}
     >
       <Stack width={"45%"} direction={"column"} spacing={4}>
-        <Card width={"100%"} height={"300px"}>
+        <Card
+          width={"100%"}
+          height={"300px"}
+          className="box-border bg-gradient-to-b  from-white to-primaryBlue-200"
+        >
           <CardBody className="flex items-center">
             <Stack
               direction={"row"}
@@ -100,10 +105,19 @@ const DoctorDashboard = ({ user }: DashboardProps) => {
                 paddingLeft={6}
               >
                 <Stack direction={"column"} spacing={4} alignItems={"center"}>
-                  <PatientIcon color="blue.500" size="30%" />
-                  <Heading size="md">Your Patients</Heading>
+                  <PatientIcon color="blue.600" size="30%" />
+                  <Heading size="md" color="primaryBlue.400">
+                    Your Patients
+                  </Heading>
                 </Stack>
-                <Button size="md" colorScheme="blue">
+                <Button
+                  size="md"
+                  backgroundColor={"#2937aa"}
+                  color="white"
+                  _hover={{
+                    bg: "primaryBlue.500",
+                  }}
+                >
                   View Patients
                 </Button>
               </Stack>
@@ -138,16 +152,14 @@ const DoctorDashboard = ({ user }: DashboardProps) => {
                         }}
                       >
                         <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="name" />
-                        <YAxis />
+                        <XAxis dataKey="name" stroke="#1a202c" />
+                        <YAxis stroke="#1a202c" />
                         <Tooltip />
                         <Bar
                           dataKey="totalPatients"
-                          fill="#1185c1"
+                          fill="#2937aa"
                           radius={[20, 20, 0, 0]}
-                          activeBar={
-                            <Rectangle fill="#0053a1" stroke="black" />
-                          }
+                          activeBar={<Rectangle fill="#0053a1" />}
                         />
                       </BarChart>
                     </div>
@@ -157,89 +169,24 @@ const DoctorDashboard = ({ user }: DashboardProps) => {
             </Stack>
           </CardBody>
         </Card>
-        <Card width={"100%"} height={"300px"}>
-          <CardBody className="flex items-center">
-            <Stack
-              direction={"row"}
-              alignItems={"center"}
-              justifyContent={"center"}
-            >
-              <Stack
-                direction={"column"}
-                spacing={8}
-                alignItems={"center"}
-                paddingLeft={6}
-              >
-                <Stack direction={"column"} spacing={4} alignItems={"center"}>
-                  <PatientIcon color="blue.500" size="30%" />
-                  <Heading size="md">Your Patients</Heading>
-                </Stack>
-                <Button size="md" colorScheme="blue">
-                  View Patients
-                </Button>
-              </Stack>
-              {renderComponent({
-                loading: {
-                  isLoading: isDoctorPatientListLoading,
-                  style: {
-                    width: "400px",
-                    height: "200px",
-                  },
-                },
-                error: {
-                  isError: isDoctorPatientListError,
-                  onErrorRetry: fetchDoctorPatientList,
-                  style: {
-                    width: "400px",
-                    height: "100px",
-                  },
-                },
-                component: (
-                  <>
-                    <div>
-                      <BarChart
-                        width={400}
-                        height={250}
-                        data={patientsBarData}
-                        margin={{
-                          top: 5,
-                          right: 30,
-                          left: 20,
-                          bottom: 5,
-                        }}
-                      >
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="name" />
-                        <YAxis />
-                        <Tooltip />
-                        <Bar
-                          dataKey="totalPatients"
-                          fill="#1185c1"
-                          radius={[20, 20, 0, 0]}
-                          activeBar={
-                            <Rectangle fill="#0053a1" stroke="black" />
-                          }
-                        />
-                      </BarChart>
-                    </div>
-                  </>
-                ),
-              })}
-            </Stack>
-          </CardBody>
-        </Card>
+        <Card
+          width={"100%"}
+          height={"300px"}
+          className="box-border bg-gradient-to-b  from-primaryBlue-200 to-primaryBlue-400"
+        ></Card>
       </Stack>
       <Stack width={"50%"} direction={"row"} spacing={2} flexWrap={"wrap"}>
-        <Card width={"48%"} className="box-border">
+        <Card width={"48%"} backgroundColor={"primaryBlue.400"} color="white">
           <CardBody className="flex flex-col justify-center items-center">
             <Stack direction={"column"} spacing={8} alignItems={"center"}>
               <Stack direction={"column"} spacing={4} alignItems={"center"}>
-                <ObservationIcon color="blue.500" size="80px" />
+                <ObservationIcon color="whiteAlpha.800" size="80px" />
                 <Heading size="md">Observations</Heading>
               </Stack>
               <Button
                 size="md"
-                colorScheme="blue"
+                backgroundColor={"primaryBlue.50"}
+                color={"primaryBlue.500"}
                 onClick={() => {
                   navigate("/observations/add");
                 }}
@@ -249,16 +196,16 @@ const DoctorDashboard = ({ user }: DashboardProps) => {
             </Stack>
           </CardBody>
         </Card>
-        <Card width={"48%"} className="box-border">
+        <Card width={"48%"} backgroundColor={"primaryBlue.400"} color="white">
           <CardBody className="flex flex-col justify-center items-center">
             <Stack direction={"column"} spacing={8} alignItems={"center"}>
               <Stack direction={"column"} spacing={4} alignItems={"center"}>
-                <ConditionIcon color="blue.500" size="80px" />
+                <ConditionIcon color="whiteAlpha.800" size="80px" />
                 <Heading size="md">Conditions</Heading>
               </Stack>
               <Button
-                size="md"
-                colorScheme="blue"
+                backgroundColor={"primaryBlue.50"}
+                color={"primaryBlue.500"}
                 onClick={() => {
                   navigate("/conditions/add");
                 }}
@@ -268,16 +215,17 @@ const DoctorDashboard = ({ user }: DashboardProps) => {
             </Stack>
           </CardBody>
         </Card>
-        <Card width={"48%"} className="box-border">
+        <Card width={"48%"} backgroundColor={"primaryBlue.400"} color="white">
           <CardBody className="flex flex-col justify-center items-center">
             <Stack direction={"column"} spacing={8} alignItems={"center"}>
               <Stack direction={"column"} spacing={4} alignItems={"center"}>
-                <MedicationIcon color="blue.500" size="80px" />
+                <MedicationIcon color="whiteAlpha.800" size="80px" />
                 <Heading size="md">Medications</Heading>
               </Stack>
               <Button
                 size="md"
-                colorScheme="blue"
+                backgroundColor={"primaryBlue.50"}
+                color={"primaryBlue.500"}
                 onClick={() => {
                   navigate("/medications/add");
                 }}
@@ -287,19 +235,17 @@ const DoctorDashboard = ({ user }: DashboardProps) => {
             </Stack>
           </CardBody>
         </Card>
-        <Card
-          width={"48%"}
-          className="flex flex-col justify-center  items-center"
-        >
+        <Card width={"48%"} backgroundColor={"primaryBlue.400"} color="white">
           <CardBody className="flex flex-col justify-center items-center">
             <Stack direction={"column"} spacing={8} alignItems={"center"}>
               <Stack direction={"column"} spacing={4} alignItems={"center"}>
-                <AllergyIcon color="blue.500" size="80px" />
+                <AllergyIcon color="whiteAlpha.800" size="80px" />
                 <Heading size="md">Allergy</Heading>
               </Stack>
               <Button
                 size="md"
-                colorScheme="blue"
+                backgroundColor={"primaryBlue.50"}
+                color={"primaryBlue.500"}
                 onClick={() => {
                   navigate("/allergy/add");
                 }}
@@ -334,13 +280,13 @@ const PatientDashboard = ({ user }: DashboardProps) => {
   }, [user, fetchObservations]);
 
   const observationTable = (
-    <TableContainer width={"100%"}>
-      <Table variant="simple" size="sm">
+    <TableContainer width={"100%"} color={"white"}>
+      <Table variant="striped" colorScheme="whiteAlpha" size="sm" color="white">
         <Thead>
           <Tr>
-            <Th>Date</Th>
-            <Th>Name</Th>
-            <Th>Status</Th>
+            <Th color="white">Date</Th>
+            <Th color="white">Name</Th>
+            <Th color="white">Status</Th>
           </Tr>
         </Thead>
         <Tbody>
@@ -350,11 +296,7 @@ const PatientDashboard = ({ user }: DashboardProps) => {
             ?.sort((a, b) => Date.parse(b.timestamp) - Date.parse(a.timestamp))
             ?.map((item: any, index: number) => {
               return (
-                <Tr
-                  style={{
-                    backgroundColor: index % 2 === 0 ? "#e3edfc" : "unset",
-                  }}
-                >
+                <Tr>
                   <Td>{convertDatetimeString(item.timestamp.toString())}</Td>
                   <Td>{item.code?.coding?.[0]?.display}</Td>
                   <Td>
@@ -383,12 +325,12 @@ const PatientDashboard = ({ user }: DashboardProps) => {
 
   const conditionsTable = (
     <TableContainer width={"100%"}>
-      <Table variant="simple" size="sm">
-        <Thead>
+      <Table variant="striped" colorScheme="whiteAlpha" size="sm" color="white">
+        <Thead color={"white"}>
           <Tr>
-            <Th>Date</Th>
-            <Th>Name</Th>
-            <Th>Clinical Status</Th>
+            <Th color="white">Date</Th>
+            <Th color="white">Name</Th>
+            <Th color="white">Clinical Status</Th>
           </Tr>
         </Thead>
         <Tbody>
@@ -398,11 +340,7 @@ const PatientDashboard = ({ user }: DashboardProps) => {
             ?.sort((a, b) => Date.parse(b.timestamp) - Date.parse(a.timestamp))
             ?.map((item: any, index: number) => {
               return (
-                <Tr
-                  style={{
-                    backgroundColor: index % 2 === 0 ? "#e3edfc" : "unset",
-                  }}
-                >
+                <Tr>
                   <Td>{convertDatetimeString(item.timestamp.toString())}</Td>
                   <Td>{item.code?.coding?.[0]?.display}</Td>
                   <Td>
@@ -433,12 +371,12 @@ const PatientDashboard = ({ user }: DashboardProps) => {
 
   const medicationsTable = (
     <TableContainer width={"100%"}>
-      <Table variant="simple" size="sm">
+      <Table variant="striped" colorScheme="whiteAlpha" size="sm" color="white">
         <Thead>
           <Tr>
-            <Th>Date</Th>
-            <Th>Name</Th>
-            <Th>Form</Th>
+            <Th color="white">Date</Th>
+            <Th color="white">Name</Th>
+            <Th color="white">Form</Th>
           </Tr>
         </Thead>
         <Tbody>
@@ -447,11 +385,7 @@ const PatientDashboard = ({ user }: DashboardProps) => {
             ?.sort((a, b) => Date.parse(b.timestamp) - Date.parse(a.timestamp))
             ?.map((item: any, index: number) => {
               return (
-                <Tr
-                  style={{
-                    backgroundColor: index % 2 === 0 ? "#e3edfc" : "unset",
-                  }}
-                >
+                <Tr>
                   <Td>{convertDatetimeString(item.timestamp.toString())}</Td>
                   <Td>{item.code?.coding?.[0]?.display}</Td>
                   <Td>
@@ -482,12 +416,12 @@ const PatientDashboard = ({ user }: DashboardProps) => {
 
   const allergiesTable = (
     <TableContainer width={"100%"}>
-      <Table variant="simple" size="sm">
+      <Table variant="striped" colorScheme="whiteAlpha" size="sm" color="white">
         <Thead>
           <Tr>
-            <Th>Date</Th>
-            <Th>Name</Th>
-            <Th>Clinical Status</Th>
+            <Th color="white">Date</Th>
+            <Th color="white">Name</Th>
+            <Th color="white">Clinical Status</Th>
           </Tr>
         </Thead>
         <Tbody>
@@ -496,11 +430,7 @@ const PatientDashboard = ({ user }: DashboardProps) => {
             ?.sort((a, b) => Date.parse(b.timestamp) - Date.parse(a.timestamp))
             ?.map((item: any, index: number) => {
               return (
-                <Tr
-                  style={{
-                    backgroundColor: index % 2 === 0 ? "#e3edfc" : "unset",
-                  }}
-                >
+                <Tr>
                   <Td>{convertDatetimeString(item.timestamp.toString())}</Td>
                   <Td>{item.code?.coding?.[0]?.display}</Td>
                   <Td>
@@ -524,8 +454,11 @@ const PatientDashboard = ({ user }: DashboardProps) => {
       width={"100%"}
       paddingY={6}
     >
-      <Stack width={"100%"} direction={"row"} spacing={2} flexWrap={"wrap"}>
-        <Card width={"48%"} className="box-border">
+      <Stack width={"100%"} direction={"row"} spacing={6} flexWrap={"wrap"}>
+        <Card
+          width={"48%"}
+          className="box-border bg-gradient-to-t from-primaryBlue-200 to-primaryBlue-400 text-white"
+        >
           <CardBody className="flex flex-col justify-start items-center">
             <Stack
               direction={"row"}
@@ -533,15 +466,16 @@ const PatientDashboard = ({ user }: DashboardProps) => {
               alignItems={"center"}
               justifyContent={"space-between"}
               width={"100%"}
-              paddingBottom={4}
+              paddingBottom={8}
             >
               <Stack direction={"row"} spacing={4} alignItems={"center"}>
-                <ObservationIcon color="blue.500" size="30px" />
+                <ObservationIcon color="white" size="30px" />
                 <Heading size="md">Observations</Heading>
               </Stack>
               <Button
                 size="sm"
-                colorScheme="blue"
+                backgroundColor={"primaryBlue.50"}
+                color={"primaryBlue.500"}
                 onClick={() => {
                   navigate("/observations");
                 }}
@@ -565,7 +499,7 @@ const PatientDashboard = ({ user }: DashboardProps) => {
             })}
           </CardBody>
         </Card>
-        <Card width={"48%"} className="box-border">
+        <Card width={"48%"} backgroundColor={"primaryBlue.400"} color="white">
           <CardBody className="flex flex-col justify-start items-center">
             <Stack
               direction={"row"}
@@ -573,15 +507,16 @@ const PatientDashboard = ({ user }: DashboardProps) => {
               alignItems={"center"}
               justifyContent={"space-between"}
               width={"100%"}
-              paddingBottom={4}
+              paddingBottom={8}
             >
               <Stack direction={"row"} spacing={4} alignItems={"center"}>
-                <ConditionIcon color="blue.500" size="30px" />
+                <ConditionIcon color="white" size="30px" />
                 <Heading size="md">Conditions</Heading>
               </Stack>
               <Button
                 size="sm"
-                colorScheme="blue"
+                backgroundColor={"primaryBlue.50"}
+                color={"primaryBlue.500"}
                 onClick={() => {
                   navigate("/conditions");
                 }}
@@ -605,7 +540,7 @@ const PatientDashboard = ({ user }: DashboardProps) => {
             })}
           </CardBody>
         </Card>
-        <Card width={"48%"} className="box-border">
+        <Card width={"48%"} backgroundColor={"primaryBlue.400"} color="white">
           <CardBody className="flex flex-col justify-start items-center">
             <Stack
               direction={"row"}
@@ -613,15 +548,16 @@ const PatientDashboard = ({ user }: DashboardProps) => {
               alignItems={"center"}
               justifyContent={"space-between"}
               width={"100%"}
-              paddingBottom={4}
+              paddingBottom={8}
             >
               <Stack direction={"row"} spacing={4} alignItems={"center"}>
-                <MedicationIcon color="blue.500" size="30px" />
+                <MedicationIcon color="white" size="30px" />
                 <Heading size="md">Medications</Heading>
               </Stack>
               <Button
                 size="sm"
-                colorScheme="blue"
+                backgroundColor={"primaryBlue.50"}
+                color={"primaryBlue.500"}
                 onClick={() => {
                   navigate("/medications");
                 }}
@@ -645,7 +581,7 @@ const PatientDashboard = ({ user }: DashboardProps) => {
             })}
           </CardBody>
         </Card>
-        <Card width={"48%"} className="box-border">
+        <Card width={"48%"} backgroundColor={"primaryBlue.400"} color="white">
           <CardBody className="flex flex-col justify-start items-center">
             <Stack
               direction={"row"}
@@ -653,15 +589,16 @@ const PatientDashboard = ({ user }: DashboardProps) => {
               alignItems={"center"}
               justifyContent={"space-between"}
               width={"100%"}
-              paddingBottom={4}
+              paddingBottom={8}
             >
               <Stack direction={"row"} spacing={4} alignItems={"center"}>
-                <AllergyIcon color="blue.500" size="30px" />
+                <AllergyIcon color="white" size="30px" />
                 <Heading size="md">Allergies</Heading>
               </Stack>
               <Button
                 size="sm"
-                colorScheme="blue"
+                backgroundColor={"primaryBlue.50"}
+                color={"primaryBlue.500"}
                 onClick={() => {
                   navigate("/allergies");
                 }}
@@ -705,11 +642,13 @@ const Home = () => {
   }, [user, fetchUserData]);
 
   return (
-    <div className="flex flex-col p-12 min-h-screen bg-gray-100 w-screen">
-      <Heading color="blue.500" size={"md"}>
+    <div className="flex flex-col p-12 min-h-screen w-full">
+      <Heading color="yellow.200" size={"md"}>
         Dashboard
       </Heading>
-      <h3>Welcome, {user?.name}</h3>
+      <div className="text-white text-3xl font-semibold mb-12">
+        Welcome, {user?.name}
+      </div>
       {user?.userType === UserType.DOCTOR && <DoctorDashboard user={user} />}
       {user?.userType === UserType.PATIENT && <PatientDashboard user={user} />}
     </div>

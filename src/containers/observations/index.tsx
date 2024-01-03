@@ -22,7 +22,7 @@ const Observations = () => {
   }, [user, fetchObservations]);
   return (
     <div className="flex flex-col items-center justify-start p-6 w-full">
-      <Heading color="blue.500">Observation</Heading>
+      <Heading color="yellow.200">Observation</Heading>
       {renderComponent({
         loading: {
           isLoading: isLoading,

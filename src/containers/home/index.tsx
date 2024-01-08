@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import { useUserContext } from "../../model/user/userContext";
 import { useFetchDoctorPatientListQuery } from "../../api/doctor";
 import { UserType } from "../../constants/user";
@@ -18,7 +18,7 @@ import {
   Thead,
   Tr,
   chakra,
-  Text,
+  useToast,
 } from "@chakra-ui/react";
 import { User } from "../../types";
 import { FaUserInjured } from "react-icons/fa6";
@@ -42,6 +42,14 @@ import { convertDatetimeString } from "../../utils";
 import { useGetConditionQuery } from "../../api/condition";
 import { useGetAllergyQuery } from "../../api/allergy";
 import { useGetMedicationQuery } from "../../api/medication";
+import { useGetRecordByPatientQuery } from "../../api/record";
+import ReusableModal from "../../components/Modal";
+import ObservationCard from "../../components/ObservationCard";
+import MedicationCard from "../../components/MedicationCard";
+import ConditionCard from "../../components/ConditionCard";
+import AllergyCard from "../../components/AllergyCard";
+import { QueryClient, useMutation } from "react-query";
+import axiosWithCredentials from "../../api/fetch";
 
 type DashboardProps = {
   user: User;
@@ -175,7 +183,7 @@ const DoctorDashboard = ({ user }: DashboardProps) => {
           className="box-border bg-gradient-to-b  from-primaryBlue-200 to-primaryBlue-400"
         ></Card>
       </Stack>
-      <Stack width={"50%"} direction={"row"} spacing={2} flexWrap={"wrap"}>
+      <Stack width={"49%"} direction={"row"} spacing={2} flexWrap={"wrap"}>
         <Card width={"48%"} backgroundColor={"primaryBlue.400"} color="white">
           <CardBody className="flex flex-col justify-center items-center">
             <Stack direction={"column"} spacing={8} alignItems={"center"}>
@@ -279,6 +287,256 @@ const PatientDashboard = ({ user }: DashboardProps) => {
     }
   }, [user, fetchObservations]);
 
+  const {
+    data: patientRecordList,
+    isLoading: isPatientRecordListLoading,
+    isError: isPatientRecordListError,
+    refetch: fetchPatientRecord,
+  } = useGetRecordByPatientQuery(user?.address);
+
+  const [isRecordLoading, setIsRecordLoading] = useState(
+    isPatientRecordListLoading
+  );
+  useEffect(() => {
+    setIsRecordLoading(isPatientRecordListLoading);
+  }, [isPatientRecordListLoading]);
+
+  useEffect(() => {
+    if (user?.address) {
+      fetchPatientRecord();
+    }
+  }, [user, fetchPatientRecord]);
+
+  const [recordMetadatas, setRecordMetadatas] = useState<{
+    timestamp: string;
+    issuer: string;
+    issuerName: string;
+    category: string;
+    account: string;
+    encryptedID: string;
+    dataHash: string;
+    recordStatus: number;
+  }>({
+    timestamp: "",
+    issuer: "",
+    issuerName: "",
+    category: "",
+    account: user?.address,
+    encryptedID: "",
+    dataHash: "",
+    recordStatus: 0,
+  });
+  const [modalData, setModalData] = useState<ReactNode>(<></>);
+  const [showModal, setShowModal] = useState(false);
+
+  const enum ModalType {
+    "Approve",
+    "Decline",
+  }
+  const [modalType, setModalType] = useState(ModalType.Approve);
+
+  const pendingApprovalTable = (
+    <TableContainer width={"100%"} color={"white"}>
+      <Table variant="striped" colorScheme="whiteAlpha" size="sm" color="white">
+        <Thead>
+          <Tr>
+            <Th color="white">Date</Th>
+            <Th color="white">Issuer</Th>
+            <Th color="white">Category</Th>
+            <Th color="white">Name</Th>
+            <Th color="white">Action</Th>
+          </Tr>
+        </Thead>
+        <Tbody>
+          {patientRecordList
+            ?.filter((item) => item?.recordStatus === 0)
+            ?.slice(0, 5)
+            ?.sort((a, b) => Date.parse(b.timestamp) - Date.parse(a.timestamp))
+            ?.map((item: any, index: number) => {
+              return (
+                <Tr>
+                  <Td>{convertDatetimeString(item.timestamp.toString())}</Td>
+                  <Td>{item?.issuerDoctorName}</Td>
+                  <Td>{item?.data?.resourceType}</Td>
+                  <Td>{item?.data?.code?.coding?.[0]?.display}</Td>
+
+                  <Td>
+                    <Button
+                      size="sm"
+                      backgroundColor={"primaryBlue.50"}
+                      onClick={() => {
+                        setRecordMetadatas({
+                          timestamp: item?.timestamp?.toString(),
+                          issuer: item?.issuerDoctorAddr?.toString(),
+                          issuerName: item?.issuerDoctorName?.toString(),
+                          category: item?.data?.resourceType?.toString(),
+                          account: user?.address,
+                          encryptedID: item?.encryptedID,
+                          dataHash: item?.dataHash,
+                          recordStatus: 1,
+                        });
+                        switch (item?.data?.resourceType) {
+                          case "Observation":
+                            setModalData(<ObservationCard data={item?.data} />);
+                            break;
+                          case "Condition":
+                            setModalData(<ConditionCard data={item?.data} />);
+                            break;
+                          case "Medication":
+                            setModalData(<MedicationCard data={item?.data} />);
+                            break;
+                          case "AllergyIntolerance":
+                            setModalData(<AllergyCard data={item?.data} />);
+                            break;
+                          default:
+                            setModalData(<></>);
+                        }
+                        setModalType(ModalType.Approve);
+                        setShowModal(true);
+                      }}
+                      marginRight={"6px"}
+                    >
+                      Approve
+                    </Button>
+                    <Button
+                      size="sm"
+                      backgroundColor={"primaryBlue.300"}
+                      _hover={{
+                        bg: "primaryBlue.400",
+                      }}
+                      color="white"
+                      onClick={() => {
+                        setRecordMetadatas({
+                          timestamp: item?.timestamp?.toString(),
+                          issuer: item?.issuerDoctorAddr?.toString(),
+                          issuerName: item?.issuerDoctorName?.toString(),
+                          category: item?.data?.resourceType?.toString(),
+                          account: user?.address,
+                          encryptedID: item?.encryptedID,
+                          dataHash: item?.dataHash,
+                          recordStatus: 2,
+                        });
+                        switch (item?.data?.resourceType) {
+                          case "Observation":
+                            setModalData(<ObservationCard data={item?.data} />);
+                            break;
+                          case "Condition":
+                            setModalData(<ConditionCard data={item?.data} />);
+                            break;
+                          case "Medication":
+                            setModalData(<MedicationCard data={item?.data} />);
+                            break;
+                          case "AllergyIntolerance":
+                            setModalData(<AllergyCard data={item?.data} />);
+                            break;
+                          default:
+                            setModalData(<></>);
+                        }
+                        setModalType(ModalType.Decline);
+                        setShowModal(true);
+                      }}
+                    >
+                      Decline
+                    </Button>
+                  </Td>
+                </Tr>
+              );
+            })}
+        </Tbody>
+      </Table>
+    </TableContainer>
+  );
+  const queryClient = new QueryClient();
+
+  const editRecordMutation = useMutation({
+    mutationFn: async (data: any) => {
+      try {
+        const response = await axiosWithCredentials.post("/record/edit", data);
+      } catch (error) {}
+    },
+    onSuccess: () => {
+      toast({
+        title: "Thank You!",
+        description: `${
+          modalType === ModalType.Approve ? "Approval" : "Decline"
+        } Success`,
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+        position: "top",
+      });
+      setShowModal(false);
+      setIsRecordLoading(true);
+      fetchPatientRecord().then(() => {
+        setIsRecordLoading(false);
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error!",
+        description: "An error occurred during the request.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+        position: "top",
+      });
+      throw new Error();
+    },
+  });
+
+  const approvalModal = (
+    <ReusableModal
+      title={`Approve ${recordMetadatas?.category}`}
+      content={
+        <>
+          <Stack direction={"column"} paddingBottom={"10px"} spacing={2}>
+            <div className="text-md font-semibold">Issuer</div>
+            <div> {recordMetadatas?.issuerName}</div>
+          </Stack>
+          <Stack direction={"column"} paddingBottom={"6px"} spacing={2}>
+            <div className="text-md font-semibold">Issued on</div>
+            <div>
+              {convertDatetimeString(recordMetadatas?.timestamp?.toString())}
+            </div>
+          </Stack>
+          {modalData}
+        </>
+      }
+      onOk={() => {
+        editRecordMutation.mutate(recordMetadatas);
+      }}
+      okTitle="Approve"
+      onClose={() => setShowModal(false)}
+      isOpen={showModal}
+    />
+  );
+
+  const declineModal = (
+    <ReusableModal
+      title={`Decline ${recordMetadatas?.category}`}
+      content={
+        <>
+          <Stack direction={"column"} paddingBottom={"10px"} spacing={2}>
+            <div className="text-md font-semibold">Issuer</div>
+            <div> {recordMetadatas?.issuerName}</div>
+          </Stack>
+          <Stack direction={"column"} paddingBottom={"6px"} spacing={2}>
+            <div className="text-md font-semibold">Issued on</div>
+            <div>
+              {convertDatetimeString(recordMetadatas?.timestamp?.toString())}
+            </div>
+          </Stack>
+          {modalData}
+        </>
+      }
+      onOk={() => {
+        editRecordMutation.mutate(recordMetadatas);
+      }}
+      okTitle="Decline"
+      onClose={() => setShowModal(false)}
+      isOpen={showModal}
+    />
+  );
   const observationTable = (
     <TableContainer width={"100%"} color={"white"}>
       <Table variant="striped" colorScheme="whiteAlpha" size="sm" color="white">
@@ -447,18 +705,68 @@ const PatientDashboard = ({ user }: DashboardProps) => {
   );
 
   const navigate = useNavigate();
+  const toast = useToast();
   return (
     <Stack
-      direction={"row"}
+      direction={"column"}
       justifyContent={"center"}
       width={"100%"}
       paddingY={6}
+      spacing={6}
     >
-      <Stack width={"100%"} direction={"row"} spacing={6} flexWrap={"wrap"}>
-        <Card
-          width={"48%"}
-          className="box-border bg-gradient-to-t from-primaryBlue-200 to-primaryBlue-400 text-white"
-        >
+      <Card
+        width={"100%"}
+        className="box-border bg-gradient-to-t from-primaryBlue-200 to-primaryBlue-400 text-white"
+      >
+        <CardBody className="flex flex-col justify-start items-center">
+          <Stack
+            direction={"row"}
+            spacing={8}
+            alignItems={"center"}
+            justifyContent={"space-between"}
+            width={"100%"}
+            paddingBottom={8}
+          >
+            <Stack direction={"row"} spacing={4} alignItems={"center"}>
+              <ObservationIcon color="white" size="30px" />
+              <Heading size="md">To Be Approved</Heading>
+            </Stack>
+            <Button
+              size="sm"
+              backgroundColor={"primaryBlue.50"}
+              color={"primaryBlue.500"}
+              onClick={() => {}}
+            >
+              Browse All
+            </Button>
+          </Stack>
+          {renderComponent({
+            loading: {
+              isLoading: isRecordLoading,
+              style: {
+                width: "100%",
+                height: "160px",
+              },
+            },
+            error: {
+              isError: isPatientRecordListError,
+              onErrorRetry: fetchPatientRecord,
+            },
+            component: pendingApprovalTable,
+          })}
+        </CardBody>
+      </Card>
+      {modalType === ModalType.Approve && approvalModal}
+      {modalType === ModalType.Decline && declineModal}
+
+      <Stack
+        width={"100%"}
+        direction={"row"}
+        spacing={6}
+        flexWrap={"wrap"}
+        justifyContent={"space-between"}
+      >
+        <Card width={"49%"} backgroundColor={"primaryBlue.400"} color="white">
           <CardBody className="flex flex-col justify-start items-center">
             <Stack
               direction={"row"}
@@ -499,7 +807,7 @@ const PatientDashboard = ({ user }: DashboardProps) => {
             })}
           </CardBody>
         </Card>
-        <Card width={"48%"} backgroundColor={"primaryBlue.400"} color="white">
+        <Card width={"49%"} backgroundColor={"primaryBlue.400"} color="white">
           <CardBody className="flex flex-col justify-start items-center">
             <Stack
               direction={"row"}
@@ -540,7 +848,7 @@ const PatientDashboard = ({ user }: DashboardProps) => {
             })}
           </CardBody>
         </Card>
-        <Card width={"48%"} backgroundColor={"primaryBlue.400"} color="white">
+        <Card width={"49%"} backgroundColor={"primaryBlue.400"} color="white">
           <CardBody className="flex flex-col justify-start items-center">
             <Stack
               direction={"row"}
@@ -581,7 +889,7 @@ const PatientDashboard = ({ user }: DashboardProps) => {
             })}
           </CardBody>
         </Card>
-        <Card width={"48%"} backgroundColor={"primaryBlue.400"} color="white">
+        <Card width={"49%"} backgroundColor={"primaryBlue.400"} color="white">
           <CardBody className="flex flex-col justify-start items-center">
             <Stack
               direction={"row"}

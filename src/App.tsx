@@ -26,6 +26,7 @@ import Profile from "./containers/profile";
 import AddAllergy from "./containers/add-allergy";
 import AddMedication from "./containers/add-medication";
 import { customizedTheme } from "./theme";
+import Patients from "./containers/patients";
 
 function App() {
   const queryClient = new QueryClient();
@@ -152,6 +153,14 @@ function App() {
       element: (
         <ProtectedRoute>
           <AddMedication />
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: PATH.Patient,
+      element: (
+        <ProtectedRoute>
+          <Patients />
         </ProtectedRoute>
       ),
     },

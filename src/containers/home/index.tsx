@@ -9,6 +9,7 @@ import {
   Card,
   CardBody,
   Heading,
+  Skeleton,
   Stack,
   Table,
   TableContainer,
@@ -48,8 +49,9 @@ import ObservationCard from "../../components/ObservationCard";
 import MedicationCard from "../../components/MedicationCard";
 import ConditionCard from "../../components/ConditionCard";
 import AllergyCard from "../../components/AllergyCard";
-import { QueryClient, useMutation } from "react-query";
+import { useMutation } from "react-query";
 import axiosWithCredentials from "../../api/fetch";
+import { useFetchPatientListQuery } from "../../api/patient";
 
 type DashboardProps = {
   user: User;
@@ -76,14 +78,21 @@ const DoctorDashboard = ({ user }: DashboardProps) => {
     }
   }, [user, fetchDoctorPatientList]);
 
+  const {
+    data: totalPatientList,
+    isLoading: isPatientListLoading,
+    isError: isPatientListError,
+    refetch: fetchPatientList,
+  } = useFetchPatientListQuery();
+
   const patientsBarData = [
     {
       name: "Yours",
-      totalPatients: Number(doctorPatientList?.patientList?.length),
+      totalPatients: Number(doctorPatientList?.total),
     },
     {
       name: "All",
-      totalPatients: 10,
+      totalPatients: Number(totalPatientList?.total),
     },
   ];
 
@@ -125,21 +134,27 @@ const DoctorDashboard = ({ user }: DashboardProps) => {
                   _hover={{
                     bg: "primaryBlue.500",
                   }}
+                  onClick={() => {
+                    navigate("/patients");
+                  }}
                 >
                   View Patients
                 </Button>
               </Stack>
               {renderComponent({
                 loading: {
-                  isLoading: isDoctorPatientListLoading,
+                  isLoading: isDoctorPatientListLoading && isPatientListLoading,
                   style: {
                     width: "400px",
                     height: "200px",
                   },
                 },
                 error: {
-                  isError: isDoctorPatientListError,
-                  onErrorRetry: fetchDoctorPatientList,
+                  isError: isDoctorPatientListError || isPatientListError,
+                  onErrorRetry: () => {
+                    fetchDoctorPatientList();
+                    fetchPatientList();
+                  },
                   style: {
                     width: "400px",
                     height: "100px",
@@ -446,7 +461,6 @@ const PatientDashboard = ({ user }: DashboardProps) => {
       </Table>
     </TableContainer>
   );
-  const queryClient = new QueryClient();
 
   const editRecordMutation = useMutation({
     mutationFn: async (data: any) => {
@@ -936,18 +950,25 @@ const PatientDashboard = ({ user }: DashboardProps) => {
 };
 const Home = () => {
   const { user, setUser } = useUserContext();
-  const { data: userData, refetch: fetchUserData } = useFetchUserDetailQuery();
+  const {
+    data: userData,
+    isLoading: isUserLoading,
+    refetch: fetchUserData,
+  } = useFetchUserDetailQuery();
   useEffect(() => {
     if (userData) {
       setUser(userData);
     }
   }, [userData, setUser]);
+
   useEffect(() => {
     console.log(user);
     if (!user.name && !user.IC && user.isLoggedIn) {
       fetchUserData();
     }
   }, [user, fetchUserData]);
+
+  console.log("user type", isUserLoading);
 
   return (
     <div className="flex flex-col p-12 min-h-screen w-full">
@@ -957,8 +978,36 @@ const Home = () => {
       <div className="text-white text-3xl font-semibold mb-12">
         Welcome, {user?.name}
       </div>
-      {user?.userType === UserType.DOCTOR && <DoctorDashboard user={user} />}
-      {user?.userType === UserType.PATIENT && <PatientDashboard user={user} />}
+      {isUserLoading || user?.name === "" ? (
+        <Stack direction={"column"} spacing={6} paddingY="12px">
+          {[0, 1].map((_) => {
+            return (
+              <Stack direction={"row"} spacing={6}>
+                {[0, 1, 2].map((_) => {
+                  return (
+                    <Skeleton
+                      height="300px"
+                      width="30%"
+                      startColor="primaryBlue.100"
+                      endColor="primaryBlue.200"
+                      borderRadius={"md"}
+                    />
+                  );
+                })}
+              </Stack>
+            );
+          })}
+        </Stack>
+      ) : (
+        <>
+          {user?.userType === UserType.DOCTOR && (
+            <DoctorDashboard user={user} />
+          )}
+          {user?.userType === UserType.PATIENT && (
+            <PatientDashboard user={user} />
+          )}
+        </>
+      )}
     </div>
   );
 };

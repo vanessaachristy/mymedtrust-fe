@@ -2,18 +2,33 @@ export const enum PATH {
   Home = "/",
   Login = "/login",
   SignUp = "/signup",
-  Observations = "/observations",
-  Conditions = "/conditions",
-  Allergies = "/allergies",
-  Medications = "/medications",
-  Whitelist = "/whitelist",
-  AddObservation = "/observations/add",
-  AddCondition = "/conditions/add",
-  AddAllergy = "/allergy/add",
-  AddMedication = "/medications/add",
   Profile = "/profile",
-  Patient = "/patients",
+
+  // Records
   AllRecords = "/records",
+
+  Observations = "/observations",
+  AddObservation = "/observations/add",
+
+  Conditions = "/conditions",
+  AddCondition = "/conditions/add",
+
+  Allergies = "/allergies",
+  AddAllergy = "/allergy/add",
+
+  Medications = "/medications",
+  AddMedication = "/medications/add",
+
+  // Patient
+  Patient = "/patients",
+  AddPatients = "/patients/add",
+
+  // Doctor
+  Doctors = "/doctos",
+  AddDoctors = "/doctors/add",
+
+  // Whitelist (for Admin)
+  Whitelist = "/whitelist",
 }
 
 export type NavItems = {
@@ -79,6 +94,18 @@ export const ADMIN_NAV: NavItems[] = [
   {
     label: "Home",
     href: PATH.Home,
+  },
+  {
+    label: "Patients",
+    href: PATH.Patient,
+  },
+  {
+    label: "Doctors",
+    href: PATH.Doctors,
+  },
+  {
+    label: "Whitelist",
+    href: PATH.Whitelist,
   },
 ];
 

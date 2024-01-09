@@ -26,7 +26,7 @@ import Fuse from "fuse.js";
 import { useFetchPatientListQuery } from "../../api/patient";
 import { UserType } from "../../constants/user";
 
-const Patients = () => {
+const Doctors = () => {
   const { user, setUser } = useUserContext();
   const { data: userData, refetch: fetchUserData } = useFetchUserDetailQuery();
   useEffect(() => {
@@ -213,7 +213,7 @@ const Patients = () => {
   return (
     <div className="flex flex-col items-center justify-start p-6 w-full">
       <Heading color="yellow.200" marginBottom={"24px"}>
-        Your Patients
+        Doctors
       </Heading>
       <SearchBar
         placeholder="Search patient name / address / email / IC"
@@ -255,4 +255,4 @@ const Patients = () => {
   );
 };
 
-export default Patients;
+export default Doctors;

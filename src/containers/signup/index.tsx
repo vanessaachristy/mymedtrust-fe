@@ -37,7 +37,7 @@ import {
 import { GiBodyHeight } from "react-icons/gi";
 import { BloodType, UserType } from "../../constants/user";
 import { PATH } from "../../constants/path";
-import { Form } from "react-router-dom";
+import { Form, useNavigate } from "react-router-dom";
 import { useMutation } from "react-query";
 import axiosWithCredentials from "../../api/fetch";
 
@@ -128,13 +128,13 @@ const SignUp = () => {
 
   const [errorMessage, setErrorMessage] = useState("");
 
+  const navigate = useNavigate();
+
   const signupMutation = useMutation({
     mutationFn: (data: any) => {
       return axiosWithCredentials
         .post("/user/signup", data)
-        .then(function (response) {
-          console.log(response);
-        })
+        .then(function (response) {})
         .catch(function (error) {
           if (
             error?.response?.status === 401 ||
@@ -147,6 +147,11 @@ const SignUp = () => {
           }
           throw new Error();
         });
+    },
+    onSuccess: () => {
+      setTimeout(() => {
+        navigate("/login");
+      }, 2000);
     },
   });
 

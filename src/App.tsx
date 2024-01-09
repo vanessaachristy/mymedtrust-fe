@@ -28,6 +28,7 @@ import AddMedication from "./containers/add-medication";
 import { customizedTheme } from "./theme";
 import Patients from "./containers/patients";
 import AllRecords from "./containers/all-records";
+import Doctors from "./containers/doctors";
 
 function App() {
   const queryClient = new QueryClient();
@@ -178,6 +179,14 @@ function App() {
       element: (
         <ProtectedRoute>
           <AllRecords />
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: PATH.Doctors,
+      element: (
+        <ProtectedRoute>
+          <Doctors />
         </ProtectedRoute>
       ),
     },

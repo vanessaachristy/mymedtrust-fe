@@ -63,72 +63,78 @@ const Whitelist = () => {
     whitelistMutation.mutate(formData);
   };
   return (
-    <Form
-      onSubmit={handleSubmit}
-      className="w-screen flex flex-col justify-center items-center px-12"
-    >
-      <Stack
-        spacing={4}
-        padding={"12px"}
-        backgroundColor={"whiteAlpha.100"}
-        width={"80%"}
-        justifyContent={"center"}
-        alignItems={"center"}
+    <div className="flex flex-col items-center justify-start p-6 w-full">
+      <Heading color="yellow.200" marginBottom={"24px"}>
+        Whitelist Doctor
+      </Heading>
+      <Form
+        onSubmit={handleSubmit}
+        className="w-screen flex flex-col justify-center items-center px-12"
       >
-        <Heading color="blue.500">Whitelist Doctor</Heading>
-        <FormControl isRequired>
-          <InputGroup>
-            <InputLeftElement
-              pointerEvents="none"
-              children={<CFaUserMd color="gray.300" />}
-            />
-            <Input
-              type="text"
-              placeholder="Doctor address"
-              name="doctor"
-              value={formData.doctor}
-              onChange={handleInputChange}
-            />
-          </InputGroup>
-        </FormControl>
-        <FormControl isRequired>
-          <InputGroup>
-            <InputLeftElement
-              pointerEvents="none"
-              children={<CFaUserAlt color="gray.300" />}
-            />
-            <Input
-              type="text"
-              placeholder="Patient address"
-              name="patient"
-              value={formData.patient}
-              onChange={handleInputChange}
-            />
-          </InputGroup>
-        </FormControl>
-        <Button
-          borderRadius={12}
-          type="submit"
-          colorScheme="blue"
-          width="30%"
-          isLoading={whitelistMutation.isLoading}
+        <Stack
+          spacing={4}
+          padding={"24px"}
+          width={"80%"}
+          justifyContent={"center"}
+          alignItems={"center"}
+          color="white"
+          backgroundColor={"primaryBlue.300"}
+          borderRadius={"md"}
         >
-          Whitelist
-        </Button>
-      </Stack>
-      {whitelistMutation.isError && (
-        <Alert status="error">
-          <AlertIcon />
-          <AlertDescription>{unauthorizedMessage}</AlertDescription>
-        </Alert>
-      )}
-      {whitelistMutation.isSuccess && !whitelistMutation.isError && (
-        <Alert status="success">
-          <AlertIcon />
-          <AlertTitle>Whitelist successful!</AlertTitle>
-        </Alert>
-      )}
-    </Form>
+          <FormControl isRequired>
+            <InputGroup>
+              <InputLeftElement
+                pointerEvents="none"
+                children={<CFaUserMd color="gray.300" />}
+              />
+              <Input
+                type="text"
+                placeholder="Doctor address"
+                name="doctor"
+                value={formData.doctor}
+                onChange={handleInputChange}
+              />
+            </InputGroup>
+          </FormControl>
+          <FormControl isRequired>
+            <InputGroup>
+              <InputLeftElement
+                pointerEvents="none"
+                children={<CFaUserAlt color="gray.300" />}
+              />
+              <Input
+                type="text"
+                placeholder="Patient address"
+                name="patient"
+                value={formData.patient}
+                onChange={handleInputChange}
+              />
+            </InputGroup>
+          </FormControl>
+          <Button
+            borderRadius={12}
+            type="submit"
+            backgroundColor={"primaryBlue.50"}
+            width="30%"
+            isLoading={whitelistMutation.isLoading}
+          >
+            Whitelist
+          </Button>
+        </Stack>
+        {whitelistMutation.isError && (
+          <Alert status="error">
+            <AlertIcon />
+            <AlertDescription>{unauthorizedMessage}</AlertDescription>
+          </Alert>
+        )}
+        {whitelistMutation.isSuccess && !whitelistMutation.isError && (
+          <Alert status="success">
+            <AlertIcon />
+            <AlertTitle>Whitelist successful!</AlertTitle>
+          </Alert>
+        )}
+      </Form>
+    </div>
   );
 };
 

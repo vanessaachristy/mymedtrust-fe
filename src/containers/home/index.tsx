@@ -8,6 +8,7 @@ import {
   Button,
   Card,
   CardBody,
+  CardHeader,
   Heading,
   Skeleton,
   Stack,
@@ -989,6 +990,74 @@ const PatientDashboard = ({ user }: DashboardProps) => {
     </Stack>
   );
 };
+
+const AdminDashboard = ({ user }: DashboardProps) => {
+  return (
+    <Stack
+      direction={"column"}
+      justifyContent={"center"}
+      width={"100%"}
+      paddingY={6}
+      spacing={6}
+    >
+      <Stack
+        direction="row"
+        justifyContent={"space-between"}
+        width="100%"
+        spacing={6}
+      >
+        <Card backgroundColor={"primaryBlue.400"} color="white" width="33%">
+          <CardHeader>
+            <Heading size="md">Total Patients</Heading>
+          </CardHeader>
+          <CardBody>Total patients</CardBody>
+        </Card>
+        <Card backgroundColor={"primaryBlue.400"} color="white" width="33%">
+          <CardHeader>
+            <Heading size="md">Total Doctors</Heading>
+          </CardHeader>
+          <CardBody>Total patients</CardBody>
+        </Card>
+        <Card backgroundColor={"primaryBlue.400"} color="white" width="33%">
+          <CardHeader>
+            <Heading size="md">Total Records</Heading>
+          </CardHeader>
+          <CardBody>Total patients</CardBody>
+        </Card>
+      </Stack>
+      <Stack
+        direction="row"
+        justifyContent={"space-between"}
+        width="100%"
+        spacing={6}
+      >
+        <Card backgroundColor={"primaryBlue.400"} color="white" width="50%">
+          <CardHeader>
+            <Heading size="md">Patients Statistics</Heading>
+          </CardHeader>
+          <CardBody>Stats</CardBody>
+        </Card>
+        <Card
+          backgroundColor={"primaryBlue.400"}
+          minHeight={"200px"}
+          color="white"
+          width="50%"
+        >
+          <CardHeader>
+            <Heading size="md">Other Statistics</Heading>
+          </CardHeader>
+          <CardBody>Stats</CardBody>
+        </Card>
+      </Stack>
+      <Card backgroundColor={"primaryBlue.400"} color="white">
+        <CardHeader>
+          <Heading size="md">Patients List</Heading>
+        </CardHeader>
+        <CardBody>Patients Table</CardBody>
+      </Card>
+    </Stack>
+  );
+};
 const Home = () => {
   const { user, setUser } = useUserContext();
   const {
@@ -1045,6 +1114,7 @@ const Home = () => {
           {user?.userType === UserType.PATIENT && (
             <PatientDashboard user={user} />
           )}
+          {user?.userType === UserType.ADMIN && <AdminDashboard user={user} />}
         </>
       )}
     </div>

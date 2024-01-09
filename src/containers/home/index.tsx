@@ -290,19 +290,6 @@ const PatientDashboard = ({ user }: DashboardProps) => {
   const ConditionIcon = chakra(FaFileMedicalAlt);
 
   const {
-    data: observationsList,
-    isLoading: isObservationListLoading,
-    isError: isObservationListError,
-    refetch: fetchObservations,
-  } = useGetObservationsQuery(user?.address);
-
-  useEffect(() => {
-    if (user?.address) {
-      fetchObservations();
-    }
-  }, [user, fetchObservations]);
-
-  const {
     data: patientRecordList,
     isLoading: isPatientRecordListLoading,
     isError: isPatientRecordListError,
@@ -551,6 +538,20 @@ const PatientDashboard = ({ user }: DashboardProps) => {
       isOpen={showModal}
     />
   );
+
+  const {
+    data: observationsList,
+    isLoading: isObservationListLoading,
+    isError: isObservationListError,
+    refetch: fetchObservations,
+  } = useGetObservationsQuery(user?.address);
+
+  useEffect(() => {
+    if (user?.address) {
+      fetchObservations();
+    }
+  }, [user, fetchObservations]);
+
   const observationTable = (
     <TableContainer width={"100%"} color={"white"}>
       <Table variant="striped" colorScheme="whiteAlpha" size="sm" color="white">
@@ -562,21 +563,30 @@ const PatientDashboard = ({ user }: DashboardProps) => {
           </Tr>
         </Thead>
         <Tbody>
-          {observationsList
-            ?.concat(observationsList)
-            .slice(0, 5)
-            ?.sort((a, b) => Date.parse(b.timestamp) - Date.parse(a.timestamp))
-            ?.map((item: any, index: number) => {
-              return (
-                <Tr>
-                  <Td>{convertDatetimeString(item.timestamp.toString())}</Td>
-                  <Td>{item.code?.coding?.[0]?.display}</Td>
-                  <Td>
-                    <Badge colorScheme="blue">{item?.status}</Badge>
-                  </Td>
-                </Tr>
-              );
-            })}
+          {observationsList?.length === 0 ? (
+            <Tr>
+              <Td colSpan={3} textAlign={"center"} height="100px">
+                No data
+              </Td>
+            </Tr>
+          ) : (
+            observationsList
+              ?.slice(0, 5)
+              ?.sort(
+                (a, b) => Date.parse(b.timestamp) - Date.parse(a.timestamp)
+              )
+              ?.map((item: any, index: number) => {
+                return (
+                  <Tr>
+                    <Td>{convertDatetimeString(item.timestamp.toString())}</Td>
+                    <Td>{item.code?.coding?.[0]?.display}</Td>
+                    <Td>
+                      <Badge colorScheme="blue">{item?.status}</Badge>
+                    </Td>
+                  </Tr>
+                );
+              })
+          )}
         </Tbody>
       </Table>
     </TableContainer>
@@ -606,23 +616,32 @@ const PatientDashboard = ({ user }: DashboardProps) => {
           </Tr>
         </Thead>
         <Tbody>
-          {conditionList
-            ?.concat(conditionList)
-            .slice(0, 5)
-            ?.sort((a, b) => Date.parse(b.timestamp) - Date.parse(a.timestamp))
-            ?.map((item: any, index: number) => {
-              return (
-                <Tr>
-                  <Td>{convertDatetimeString(item.timestamp.toString())}</Td>
-                  <Td>{item.code?.coding?.[0]?.display}</Td>
-                  <Td>
-                    <Badge colorScheme="blue">
-                      {item?.clinicalStatus?.coding?.[0]?.code}
-                    </Badge>
-                  </Td>
-                </Tr>
-              );
-            })}
+          {conditionList?.length === 0 ? (
+            <Tr>
+              <Td colSpan={3} textAlign={"center"} height="100px">
+                No data
+              </Td>
+            </Tr>
+          ) : (
+            conditionList
+              ?.slice(0, 5)
+              ?.sort(
+                (a, b) => Date.parse(b.timestamp) - Date.parse(a.timestamp)
+              )
+              ?.map((item: any, index: number) => {
+                return (
+                  <Tr>
+                    <Td>{convertDatetimeString(item.timestamp.toString())}</Td>
+                    <Td>{item.code?.coding?.[0]?.display}</Td>
+                    <Td>
+                      <Badge colorScheme="blue">
+                        {item?.clinicalStatus?.coding?.[0]?.code}
+                      </Badge>
+                    </Td>
+                  </Tr>
+                );
+              })
+          )}
         </Tbody>
       </Table>
     </TableContainer>
@@ -652,22 +671,32 @@ const PatientDashboard = ({ user }: DashboardProps) => {
           </Tr>
         </Thead>
         <Tbody>
-          {medicationList
-            ?.slice(0, 5)
-            ?.sort((a, b) => Date.parse(b.timestamp) - Date.parse(a.timestamp))
-            ?.map((item: any, index: number) => {
-              return (
-                <Tr>
-                  <Td>{convertDatetimeString(item.timestamp.toString())}</Td>
-                  <Td>{item.code?.coding?.[0]?.display}</Td>
-                  <Td>
-                    <Badge colorScheme="blue">
-                      {item?.form?.coding?.[0]?.display}
-                    </Badge>
-                  </Td>
-                </Tr>
-              );
-            })}
+          {medicationList?.length === 0 ? (
+            <Tr>
+              <Td colSpan={3} textAlign={"center"} height="100px">
+                No data
+              </Td>
+            </Tr>
+          ) : (
+            medicationList
+              ?.slice(0, 5)
+              ?.sort(
+                (a, b) => Date.parse(b.timestamp) - Date.parse(a.timestamp)
+              )
+              ?.map((item: any, index: number) => {
+                return (
+                  <Tr>
+                    <Td>{convertDatetimeString(item.timestamp.toString())}</Td>
+                    <Td>{item.code?.coding?.[0]?.display}</Td>
+                    <Td>
+                      <Badge colorScheme="blue">
+                        {item?.form?.coding?.[0]?.display}
+                      </Badge>
+                    </Td>
+                  </Tr>
+                );
+              })
+          )}
         </Tbody>
       </Table>
     </TableContainer>
@@ -697,22 +726,32 @@ const PatientDashboard = ({ user }: DashboardProps) => {
           </Tr>
         </Thead>
         <Tbody>
-          {allergyList
-            ?.slice(0, 5)
-            ?.sort((a, b) => Date.parse(b.timestamp) - Date.parse(a.timestamp))
-            ?.map((item: any, index: number) => {
-              return (
-                <Tr>
-                  <Td>{convertDatetimeString(item.timestamp.toString())}</Td>
-                  <Td>{item.code?.coding?.[0]?.display}</Td>
-                  <Td>
-                    <Badge colorScheme="blue">
-                      {item?.clinicalStatus?.coding?.[0]?.code}
-                    </Badge>
-                  </Td>
-                </Tr>
-              );
-            })}
+          {allergyList?.length === 0 ? (
+            <Tr>
+              <Td colSpan={3} textAlign={"center"} height="100px">
+                No data
+              </Td>
+            </Tr>
+          ) : (
+            allergyList
+              ?.slice(0, 5)
+              ?.sort(
+                (a, b) => Date.parse(b.timestamp) - Date.parse(a.timestamp)
+              )
+              ?.map((item: any, index: number) => {
+                return (
+                  <Tr>
+                    <Td>{convertDatetimeString(item.timestamp.toString())}</Td>
+                    <Td>{item.code?.coding?.[0]?.display}</Td>
+                    <Td>
+                      <Badge colorScheme="blue">
+                        {item?.clinicalStatus?.coding?.[0]?.code}
+                      </Badge>
+                    </Td>
+                  </Tr>
+                );
+              })
+          )}
         </Tbody>
       </Table>
     </TableContainer>
@@ -749,9 +788,11 @@ const PatientDashboard = ({ user }: DashboardProps) => {
               size="sm"
               backgroundColor={"primaryBlue.50"}
               color={"primaryBlue.500"}
-              onClick={() => {}}
+              onClick={() => {
+                navigate("/records");
+              }}
             >
-              Browse All
+              Browse All Records
             </Button>
           </Stack>
           {renderComponent({
@@ -967,8 +1008,6 @@ const Home = () => {
       fetchUserData();
     }
   }, [user, fetchUserData]);
-
-  console.log("user type", isUserLoading);
 
   return (
     <div className="flex flex-col p-12 min-h-screen w-full">

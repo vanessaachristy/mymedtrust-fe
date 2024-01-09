@@ -13,6 +13,7 @@ export const enum PATH {
   AddMedication = "/medications/add",
   Profile = "/profile",
   Patient = "/patients",
+  AllRecords = "/records",
 }
 
 export type NavItems = {
@@ -24,6 +25,10 @@ export const PATIENT_NAV: NavItems[] = [
   {
     label: "Home",
     href: PATH.Home,
+  },
+  {
+    label: "All Records",
+    href: PATH.AllRecords,
   },
   {
     label: "Observations",

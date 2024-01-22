@@ -21,3 +21,52 @@ export const useGetRecordByPatientQuery = (patientAddress: string) => {
         }
     )
 }
+
+
+
+const fetchRecordsList = async () => {
+    try {
+        const response = await axiosWithCredentials.get(`/record/id/`);
+        return response.data;
+    } catch (error) {
+        throw new Error();
+    }
+};
+
+const transformRecordsList = (res: any) => {
+    return res.data?.recordsID;
+}
+
+export const useFetchRecordsList = () => {
+    return useQuery(
+        ['useFetchRecordsList'],
+        async () => await fetchRecordsList(),
+        {
+            select: transformRecordsList,
+        }
+    )
+}
+
+const fetchRecordsDetailsList = async () => {
+    try {
+        const response = await axiosWithCredentials.get(`/record/`);
+        return response.data;
+    } catch (error) {
+        throw new Error();
+    }
+};
+
+const transformRecordsDetailsList = (res: any) => {
+    return res.data;
+}
+
+export const useFetchRecordsDetailsList = () => {
+    return useQuery(
+        ['useFetchRecordsDetailsList'],
+        async () => await fetchRecordsDetailsList(),
+        {
+            select: transformRecordsDetailsList,
+        }
+    )
+}
+

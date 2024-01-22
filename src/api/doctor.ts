@@ -26,3 +26,27 @@ export const useFetchDoctorPatientListQuery = (doctorAddress: string) => {
     )
 }
 
+
+const fetchDoctorList = async () => {
+    try {
+        const response = await axiosWithCredentials.get(`/doctor`);
+        return response.data;
+    } catch (error) {
+        throw new Error();
+    }
+};
+
+const transformDoctorList = (res: any) => {
+    return res.data?.doctors;
+}
+
+export const useFetchDoctorListQuery = () => {
+    return useQuery(
+        ['useDoctorListQuery'],
+        async () => await fetchDoctorList(),
+        {
+            select: transformDoctorList,
+            enabled: true
+        }
+    )
+}

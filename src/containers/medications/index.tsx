@@ -5,9 +5,23 @@ import { useEffect } from "react";
 import { useUserContext } from "../../model/user/userContext";
 import { Medication } from "fhir/r4";
 import { renderComponent } from "../../utils/renderComponent";
+import { useFetchUserDetailQuery } from "../../api/user";
 
 const Medications = () => {
-  const { user } = useUserContext();
+  const { user, setUser } = useUserContext();
+  const { data: userData, refetch: fetchUserData } = useFetchUserDetailQuery();
+  useEffect(() => {
+    if (!user.name && !user.IC && user.isLoggedIn) {
+      fetchUserData();
+    }
+  }, [user, fetchUserData]);
+
+  useEffect(() => {
+    if (userData) {
+      setUser(userData);
+    }
+  }, [userData, setUser]);
+
   const {
     data: medicationsList,
     isLoading,

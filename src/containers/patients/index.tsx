@@ -2,9 +2,12 @@ import { useEffect, useState } from "react";
 import { useFetchDoctorPatientListQuery } from "../../api/doctor";
 import { useUserContext } from "../../model/user/userContext";
 import {
+  Button,
   Card,
   CardBody,
   Heading,
+  Input,
+  Stack,
   Table,
   TableContainer,
   Tbody,
@@ -25,6 +28,8 @@ import { SearchBar } from "../../components/SearchBar";
 import Fuse from "fuse.js";
 import { useFetchPatientListQuery } from "../../api/patient";
 import { UserType } from "../../constants/user";
+import { useNavigate } from "react-router-dom";
+import { PiPlus } from "react-icons/pi";
 
 const Patients = () => {
   const { user, setUser } = useUserContext();
@@ -178,9 +183,9 @@ const Patients = () => {
                         <Td>{patient?.primaryInfo?.name}</Td>
                         <Td>
                           <Tooltip
-                            placement="top-start"
+                            placement="top"
                             label={patient?.primaryInfo?.address}
-                            fontSize="md"
+                            fontSize="xs"
                           >
                             <div>
                               <CFaCopy
@@ -210,6 +215,8 @@ const Patients = () => {
     </TableContainer>
   );
 
+  const navigate = useNavigate();
+
   return (
     <div className="flex flex-col items-center justify-start p-6 w-full">
       <Heading color="yellow.200" marginBottom={"24px"}>
@@ -220,6 +227,7 @@ const Patients = () => {
         onChange={(value) => setCurrSearch(value)}
         onEnter={(value) => setCurrSearch(value)}
       />
+
       <Card
         width={"100%"}
         backgroundColor={"primaryBlue.300"}

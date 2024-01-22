@@ -13,6 +13,7 @@ type SearchBarProps = {
   onChange?: (value: string) => void;
   onEnter?: (value: string) => void;
   onClick?: (value: string) => void;
+  style?: React.CSSProperties;
 };
 
 export const SearchBar = ({
@@ -20,6 +21,7 @@ export const SearchBar = ({
   onChange,
   onEnter,
   onClick,
+  style,
 }: SearchBarProps) => {
   const [inputValue, setInputValue] = useState("");
 
@@ -30,7 +32,12 @@ export const SearchBar = ({
   };
 
   return (
-    <InputGroup borderRadius={20} size="sm" backgroundColor={"white"}>
+    <InputGroup
+      borderRadius={20}
+      size="sm"
+      backgroundColor={"white"}
+      style={style}
+    >
       <InputLeftElement
         pointerEvents="none"
         children={<Search2Icon color="gray.600" />}

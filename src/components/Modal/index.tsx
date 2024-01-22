@@ -13,8 +13,8 @@ import { ReactNode } from "react";
 type ModalProps = {
   title: string;
   content: ReactNode;
-  onOk: () => void;
-  okTitle: string;
+  onOk?: () => void;
+  okTitle?: string;
   onClose: () => void;
   isOpen: boolean;
 };
@@ -40,9 +40,11 @@ const ReusableModal = ({
             <Button colorScheme="gray" mr={3} onClick={onClose}>
               Close
             </Button>
-            <Button colorScheme="blue" onClick={onOk}>
-              {okTitle}
-            </Button>
+            {onOk && (
+              <Button colorScheme="blue" onClick={onOk}>
+                {okTitle}
+              </Button>
+            )}
           </ModalFooter>
         </ModalContent>
       </Modal>

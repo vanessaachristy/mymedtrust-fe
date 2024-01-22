@@ -1,17 +1,23 @@
-import React, { ReactNode, useEffect, useState } from "react";
+import React, { ReactNode, useCallback, useEffect, useState } from "react";
 import { useUserContext } from "../../model/user/userContext";
-import { useFetchDoctorPatientListQuery } from "../../api/doctor";
+import {
+  useFetchDoctorListQuery,
+  useFetchDoctorPatientListQuery,
+} from "../../api/doctor";
 import { UserType } from "../../constants/user";
 import { useFetchUserDetailQuery } from "../../api/user";
 import {
+  Avatar,
   Badge,
   Button,
   Card,
   CardBody,
   CardHeader,
+  Divider,
   Heading,
   Skeleton,
   Stack,
+  StackDivider,
   Table,
   TableContainer,
   Tbody,
@@ -19,21 +25,21 @@ import {
   Th,
   Thead,
   Tr,
+  Tooltip,
   chakra,
   useToast,
+  useClipboard,
+  Box,
 } from "@chakra-ui/react";
 import { User } from "../../types";
-import { FaUserInjured } from "react-icons/fa6";
-import { MdNoFood } from "react-icons/md";
 import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Rectangle,
-} from "recharts";
+  FaCopy,
+  FaFileMedical,
+  FaUserDoctor,
+  FaUserGroup,
+  FaUserInjured,
+} from "react-icons/fa6";
+import { MdNoFood } from "react-icons/md";
 import { PiFileMagnifyingGlassFill } from "react-icons/pi";
 import { GiMedicinePills } from "react-icons/gi";
 import { FaFileMedicalAlt } from "react-icons/fa";
@@ -44,7 +50,10 @@ import { convertDatetimeString } from "../../utils";
 import { useGetConditionQuery } from "../../api/condition";
 import { useGetAllergyQuery } from "../../api/allergy";
 import { useGetMedicationQuery } from "../../api/medication";
-import { useGetRecordByPatientQuery } from "../../api/record";
+import {
+  useFetchRecordsList,
+  useGetRecordByPatientQuery,
+} from "../../api/record";
 import ReusableModal from "../../components/Modal";
 import ObservationCard from "../../components/ObservationCard";
 import MedicationCard from "../../components/MedicationCard";
@@ -53,6 +62,22 @@ import AllergyCard from "../../components/AllergyCard";
 import { useMutation } from "react-query";
 import axiosWithCredentials from "../../api/fetch";
 import { useFetchPatientListQuery } from "../../api/patient";
+import ReactApexChart from "react-apexcharts";
+import { ApexOptions } from "apexcharts";
+import {
+  BarChart,
+  Bar,
+  Rectangle,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip as ChartTooltip,
+  Legend,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Sector,
+} from "recharts";
 
 type DashboardProps = {
   user: User;
@@ -86,16 +111,45 @@ const DoctorDashboard = ({ user }: DashboardProps) => {
     refetch: fetchPatientList,
   } = useFetchPatientListQuery();
 
-  const patientsBarData = [
-    {
-      name: "Yours",
-      totalPatients: Number(doctorPatientList?.total),
+  const patientChartOptions: ApexOptions = {
+    legend: {
+      show: false,
     },
-    {
-      name: "All",
-      totalPatients: Number(totalPatientList?.total),
-    },
+    labels: ["Your Patients", "Others"],
+    colors: ["#3836af", "#1d1c66"],
+  };
+  const patientChartSeries = [
+    Number(doctorPatientList?.total),
+    // Number(totalPatientList?.total) - Number(doctorPatientList?.total),
+    19,
   ];
+
+  const recordChartSeries = [44, 55, 41, 17];
+
+  const recordChartOptions = {
+    plotOptions: {
+      pie: {
+        startAngle: -90,
+        endAngle: 270,
+      },
+    },
+    dataLabels: {
+      enabled: false,
+    },
+    fill: {
+      type: "gradient",
+      gradient: {
+        shadeIntensity: 1,
+        opacityFrom: 0.7,
+        opacityTo: 0.9,
+        stops: [0, 90, 100],
+      },
+      colors: ["#219ebc", "#023047", "#ba324f", "#fb8500"],
+    },
+    colors: ["#219ebc", "#023047", "#ba324f", "#fb8500"],
+
+    labels: ["Observation", "Condition", "Medication", "Allergy"],
+  };
 
   return (
     <Stack
@@ -104,44 +158,22 @@ const DoctorDashboard = ({ user }: DashboardProps) => {
       width={"100%"}
       paddingY={6}
     >
-      <Stack width={"45%"} direction={"column"} spacing={4}>
+      <Stack width={"40%"} direction={"column"} spacing={4}>
         <Card
           width={"100%"}
           height={"300px"}
-          className="box-border bg-gradient-to-b  from-white to-primaryBlue-200"
+          className="box-border bg-gradient-to-b  from-white to-primaryBlue-200 pb-12"
         >
+          <CardHeader paddingBottom={0}>
+            <Heading size="md">Your Patients</Heading>
+          </CardHeader>
           <CardBody className="flex items-center">
             <Stack
               direction={"row"}
               alignItems={"center"}
               justifyContent={"center"}
+              spacing={0}
             >
-              <Stack
-                direction={"column"}
-                spacing={8}
-                alignItems={"center"}
-                paddingLeft={6}
-              >
-                <Stack direction={"column"} spacing={4} alignItems={"center"}>
-                  <PatientIcon color="blue.600" size="30%" />
-                  <Heading size="md" color="primaryBlue.400">
-                    Your Patients
-                  </Heading>
-                </Stack>
-                <Button
-                  size="md"
-                  backgroundColor={"#2937aa"}
-                  color="white"
-                  _hover={{
-                    bg: "primaryBlue.500",
-                  }}
-                  onClick={() => {
-                    navigate("/patients");
-                  }}
-                >
-                  View Patients
-                </Button>
-              </Stack>
               {renderComponent({
                 loading: {
                   isLoading: isDoctorPatientListLoading && isPatientListLoading,
@@ -163,30 +195,60 @@ const DoctorDashboard = ({ user }: DashboardProps) => {
                 },
                 component: (
                   <>
-                    <div>
-                      <BarChart
-                        width={400}
-                        height={250}
-                        data={patientsBarData}
-                        margin={{
-                          top: 5,
-                          right: 30,
-                          left: 20,
-                          bottom: 5,
-                        }}
-                      >
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="name" stroke="#1a202c" />
-                        <YAxis stroke="#1a202c" />
-                        <Tooltip />
-                        <Bar
-                          dataKey="totalPatients"
-                          fill="#2937aa"
-                          radius={[20, 20, 0, 0]}
-                          activeBar={<Rectangle fill="#0053a1" />}
-                        />
-                      </BarChart>
+                    <div className="max-w-[250px]">
+                      <ReactApexChart
+                        options={patientChartOptions}
+                        series={patientChartSeries}
+                        type="pie"
+                        width={"100%"}
+                      />
                     </div>
+                    <Stack
+                      direction={"column"}
+                      spacing={4}
+                      alignItems={"left"}
+                      justifyContent={"center"}
+                    >
+                      <Stack
+                        direction="row"
+                        h="100px"
+                        spacing={4}
+                        divider={<StackDivider borderColor="blackAlpha.300" />}
+                        alignItems="center"
+                      >
+                        <Stack direction={"column"} spacing={0}>
+                          <Heading size="sm" color="blackAlpha.600">
+                            Yours
+                          </Heading>
+                          <Heading size="xl">
+                            {Number(doctorPatientList?.total)}
+                          </Heading>
+                        </Stack>
+                        <Stack direction={"column"} spacing={0}>
+                          <Heading size="sm" color="blackAlpha.600">
+                            Total Patients
+                          </Heading>
+                          <Heading size="xl">
+                            {Number(totalPatientList?.total)}
+                          </Heading>
+                        </Stack>
+                      </Stack>
+
+                      <Button
+                        size="md"
+                        backgroundColor={"#2937aa"}
+                        color="white"
+                        _hover={{
+                          bg: "primaryBlue.500",
+                        }}
+                        onClick={() => {
+                          navigate("/patients");
+                        }}
+                        width="80%"
+                      >
+                        View Patients
+                      </Button>
+                    </Stack>
                   </>
                 ),
               })}
@@ -196,10 +258,31 @@ const DoctorDashboard = ({ user }: DashboardProps) => {
         <Card
           width={"100%"}
           height={"300px"}
-          className="box-border bg-gradient-to-b  from-primaryBlue-200 to-primaryBlue-400"
-        ></Card>
+          className="box-border bg-gradient-to-b  from-white to-primaryBlue-200 pb-12"
+        >
+          <CardHeader paddingBottom={0}>
+            <Heading size="md">Records Created By You</Heading>
+          </CardHeader>
+          <CardBody className="flex items-center">
+            <Stack
+              direction={"column"}
+              alignItems={"center"}
+              justifyContent={"center"}
+              spacing={0}
+              width={"75%"}
+            >
+              <div className="w-full">
+                <ReactApexChart
+                  options={recordChartOptions}
+                  series={recordChartSeries}
+                  type="donut"
+                />
+              </div>
+            </Stack>
+          </CardBody>
+        </Card>
       </Stack>
-      <Stack width={"49%"} direction={"row"} spacing={2} flexWrap={"wrap"}>
+      <Stack width={"60%"} direction={"row"} spacing={2} flexWrap={"wrap"}>
         <Card width={"48%"} backgroundColor={"primaryBlue.400"} color="white">
           <CardBody className="flex flex-col justify-center items-center">
             <Stack direction={"column"} spacing={8} alignItems={"center"}>
@@ -817,181 +900,335 @@ const PatientDashboard = ({ user }: DashboardProps) => {
 
       <Stack
         width={"100%"}
-        direction={"row"}
+        direction={"column"}
         spacing={6}
-        flexWrap={"wrap"}
-        justifyContent={"space-between"}
+        // flexWrap={"wrap"}
+        justifyContent={"center"}
       >
-        <Card width={"49%"} backgroundColor={"primaryBlue.400"} color="white">
-          <CardBody className="flex flex-col justify-start items-center">
-            <Stack
-              direction={"row"}
-              spacing={8}
-              alignItems={"center"}
-              justifyContent={"space-between"}
-              width={"100%"}
-              paddingBottom={8}
-            >
-              <Stack direction={"row"} spacing={4} alignItems={"center"}>
-                <ObservationIcon color="white" size="30px" />
-                <Heading size="md">Observations</Heading>
-              </Stack>
-              <Button
-                size="sm"
-                backgroundColor={"primaryBlue.50"}
-                color={"primaryBlue.500"}
-                onClick={() => {
-                  navigate("/observations");
-                }}
+        <Stack direction="row" spacing={6} justifyContent="space-between">
+          <Card width={"50%"} backgroundColor={"primaryBlue.400"} color="white">
+            <CardBody className="flex flex-col justify-start items-center">
+              <Stack
+                direction={"row"}
+                spacing={8}
+                alignItems={"center"}
+                justifyContent={"space-between"}
+                width={"100%"}
+                paddingBottom={8}
               >
-                Browse All
-              </Button>
-            </Stack>
-            {renderComponent({
-              loading: {
-                isLoading: isObservationListLoading,
-                style: {
-                  width: "100%",
-                  height: "160px",
-                },
-              },
-              error: {
-                isError: isObservationListError,
-                onErrorRetry: fetchObservations,
-              },
-              component: observationTable,
-            })}
-          </CardBody>
-        </Card>
-        <Card width={"49%"} backgroundColor={"primaryBlue.400"} color="white">
-          <CardBody className="flex flex-col justify-start items-center">
-            <Stack
-              direction={"row"}
-              spacing={8}
-              alignItems={"center"}
-              justifyContent={"space-between"}
-              width={"100%"}
-              paddingBottom={8}
-            >
-              <Stack direction={"row"} spacing={4} alignItems={"center"}>
-                <ConditionIcon color="white" size="30px" />
-                <Heading size="md">Conditions</Heading>
+                <Stack direction={"row"} spacing={4} alignItems={"center"}>
+                  <ObservationIcon color="white" size="30px" />
+                  <Heading size="md">Observations</Heading>
+                </Stack>
+                <Button
+                  size="sm"
+                  backgroundColor={"primaryBlue.50"}
+                  color={"primaryBlue.500"}
+                  onClick={() => {
+                    navigate("/observations");
+                  }}
+                >
+                  Browse All
+                </Button>
               </Stack>
-              <Button
-                size="sm"
-                backgroundColor={"primaryBlue.50"}
-                color={"primaryBlue.500"}
-                onClick={() => {
-                  navigate("/conditions");
-                }}
-              >
-                Browse All
-              </Button>
-            </Stack>
-            {renderComponent({
-              loading: {
-                isLoading: isConditionListLoading,
-                style: {
-                  width: "100%",
-                  height: "160px",
+              {renderComponent({
+                loading: {
+                  isLoading: isObservationListLoading,
+                  style: {
+                    width: "100%",
+                    height: "160px",
+                  },
                 },
-              },
-              error: {
-                isError: isConditionListError,
-                onErrorRetry: fetchConditions,
-              },
-              component: conditionsTable,
-            })}
-          </CardBody>
-        </Card>
-        <Card width={"49%"} backgroundColor={"primaryBlue.400"} color="white">
-          <CardBody className="flex flex-col justify-start items-center">
-            <Stack
-              direction={"row"}
-              spacing={8}
-              alignItems={"center"}
-              justifyContent={"space-between"}
-              width={"100%"}
-              paddingBottom={8}
-            >
-              <Stack direction={"row"} spacing={4} alignItems={"center"}>
-                <MedicationIcon color="white" size="30px" />
-                <Heading size="md">Medications</Heading>
+                error: {
+                  isError: isObservationListError,
+                  onErrorRetry: fetchObservations,
+                },
+                component: observationTable,
+              })}
+            </CardBody>
+          </Card>
+          <Card width={"50%"} backgroundColor={"primaryBlue.400"} color="white">
+            <CardBody className="flex flex-col justify-start items-center">
+              <Stack
+                direction={"row"}
+                spacing={8}
+                alignItems={"center"}
+                justifyContent={"space-between"}
+                width={"100%"}
+                paddingBottom={8}
+              >
+                <Stack direction={"row"} spacing={4} alignItems={"center"}>
+                  <ConditionIcon color="white" size="30px" />
+                  <Heading size="md">Conditions</Heading>
+                </Stack>
+                <Button
+                  size="sm"
+                  backgroundColor={"primaryBlue.50"}
+                  color={"primaryBlue.500"}
+                  onClick={() => {
+                    navigate("/conditions");
+                  }}
+                >
+                  Browse All
+                </Button>
               </Stack>
-              <Button
-                size="sm"
-                backgroundColor={"primaryBlue.50"}
-                color={"primaryBlue.500"}
-                onClick={() => {
-                  navigate("/medications");
-                }}
-              >
-                Browse All
-              </Button>
-            </Stack>
-            {renderComponent({
-              loading: {
-                isLoading: isMedicationListLoading,
-                style: {
-                  width: "100%",
-                  height: "160px",
+              {renderComponent({
+                loading: {
+                  isLoading: isConditionListLoading,
+                  style: {
+                    width: "100%",
+                    height: "160px",
+                  },
                 },
-              },
-              error: {
-                isError: isMedicationListError,
-                onErrorRetry: fetchMedications,
-              },
-              component: medicationsTable,
-            })}
-          </CardBody>
-        </Card>
-        <Card width={"49%"} backgroundColor={"primaryBlue.400"} color="white">
-          <CardBody className="flex flex-col justify-start items-center">
-            <Stack
-              direction={"row"}
-              spacing={8}
-              alignItems={"center"}
-              justifyContent={"space-between"}
-              width={"100%"}
-              paddingBottom={8}
-            >
-              <Stack direction={"row"} spacing={4} alignItems={"center"}>
-                <AllergyIcon color="white" size="30px" />
-                <Heading size="md">Allergies</Heading>
+                error: {
+                  isError: isConditionListError,
+                  onErrorRetry: fetchConditions,
+                },
+                component: conditionsTable,
+              })}
+            </CardBody>
+          </Card>
+        </Stack>
+        <Stack direction="row" spacing={6} justifyContent="space-between">
+          <Card width={"50%"} backgroundColor={"primaryBlue.400"} color="white">
+            <CardBody className="flex flex-col justify-start items-center">
+              <Stack
+                direction={"row"}
+                spacing={8}
+                alignItems={"center"}
+                justifyContent={"space-between"}
+                width={"100%"}
+                paddingBottom={8}
+              >
+                <Stack direction={"row"} spacing={4} alignItems={"center"}>
+                  <MedicationIcon color="white" size="30px" />
+                  <Heading size="md">Medications</Heading>
+                </Stack>
+                <Button
+                  size="sm"
+                  backgroundColor={"primaryBlue.50"}
+                  color={"primaryBlue.500"}
+                  onClick={() => {
+                    navigate("/medications");
+                  }}
+                >
+                  Browse All
+                </Button>
               </Stack>
-              <Button
-                size="sm"
-                backgroundColor={"primaryBlue.50"}
-                color={"primaryBlue.500"}
-                onClick={() => {
-                  navigate("/allergies");
-                }}
-              >
-                Browse All
-              </Button>
-            </Stack>
-            {renderComponent({
-              loading: {
-                isLoading: isAllergyListLoading,
-                style: {
-                  width: "100%",
-                  height: "160px",
+              {renderComponent({
+                loading: {
+                  isLoading: isMedicationListLoading,
+                  style: {
+                    width: "100%",
+                    height: "160px",
+                  },
                 },
-              },
-              error: {
-                isError: isAllergyListError,
-                onErrorRetry: fetchAllergies,
-              },
-              component: allergiesTable,
-            })}
-          </CardBody>
-        </Card>
+                error: {
+                  isError: isMedicationListError,
+                  onErrorRetry: fetchMedications,
+                },
+                component: medicationsTable,
+              })}
+            </CardBody>
+          </Card>
+          <Card width={"50%"} backgroundColor={"primaryBlue.400"} color="white">
+            <CardBody className="flex flex-col justify-start items-center">
+              <Stack
+                direction={"row"}
+                spacing={8}
+                alignItems={"center"}
+                justifyContent={"space-between"}
+                width={"100%"}
+                paddingBottom={8}
+              >
+                <Stack direction={"row"} spacing={4} alignItems={"center"}>
+                  <AllergyIcon color="white" size="30px" />
+                  <Heading size="md">Allergies</Heading>
+                </Stack>
+                <Button
+                  size="sm"
+                  backgroundColor={"primaryBlue.50"}
+                  color={"primaryBlue.500"}
+                  onClick={() => {
+                    navigate("/allergies");
+                  }}
+                >
+                  Browse All
+                </Button>
+              </Stack>
+              {renderComponent({
+                loading: {
+                  isLoading: isAllergyListLoading,
+                  style: {
+                    width: "100%",
+                    height: "160px",
+                  },
+                },
+                error: {
+                  isError: isAllergyListError,
+                  onErrorRetry: fetchAllergies,
+                },
+                component: allergiesTable,
+              })}
+            </CardBody>
+          </Card>
+        </Stack>
       </Stack>
     </Stack>
   );
 };
 
 const AdminDashboard = ({ user }: DashboardProps) => {
+  const {
+    data: patientList,
+    isLoading: isPatientListLoading,
+    isError: isPatientListError,
+    refetch: fetchPatientList,
+  } = useFetchPatientListQuery();
+
+  const {
+    data: doctorList,
+    isLoading: isDoctorListLoading,
+    isError: isDoctorListError,
+    refetch: fetchDoctorList,
+  } = useFetchDoctorListQuery();
+
+  const {
+    data: recordList,
+    isLoading: isRecordListLoading,
+    isError: isRecordListError,
+    refetch: fetchRecordList,
+  } = useFetchRecordsList();
+
+  const CFaCopy = chakra(FaCopy);
+  const {
+    onCopy,
+    value: copyAddress,
+    setValue: setCopyAddress,
+    hasCopied,
+  } = useClipboard("");
+  const toast = useToast();
+
+  useEffect(() => {
+    if (hasCopied) {
+      toast({
+        title: "Address copied!",
+        status: "success",
+        duration: 2000,
+        isClosable: true,
+        position: "top",
+      });
+    }
+  }, [hasCopied]);
+
+  const patientsTable = (
+    <TableContainer width={"100%"} color={"white"}>
+      <Table variant="striped" colorScheme="whiteAlpha" size="sm" color="white">
+        <Thead paddingBottom={"12px"}>
+          <Tr>
+            <Th color="white">No.</Th>
+            <Th color="white">Name</Th>
+            <Th color="white">Address</Th>
+            <Th color="white">IC</Th>
+            <Th color="white">Gender</Th>
+            <Th color="white">E-mail</Th>
+            <Th color="white">User Since</Th>
+          </Tr>
+        </Thead>
+        <Tbody>
+          {renderComponent({
+            loading: {
+              isLoading: isPatientListLoading,
+              style: {
+                height: "150px",
+              },
+            },
+            error: {
+              isError: isPatientListError,
+              onErrorRetry: fetchPatientList,
+            },
+            component:
+              patientList?.patients?.length === 0 ? (
+                <Tr>
+                  <Td colSpan={7} textAlign={"center"}>
+                    No data found
+                  </Td>
+                </Tr>
+              ) : (
+                patientList?.patients
+                  ?.slice(0, 5)
+                  ?.sort(
+                    (a: any, b: any) =>
+                      Date.parse(b.primaryInfo.userSince.timestamp) -
+                      Date.parse(a.primaryInfo.userSince.timestamp)
+                  )
+                  ?.map((patient: any, index: number) => {
+                    return (
+                      <Tr>
+                        <Td>{index + 1}</Td>
+                        <Td>{patient?.primaryInfo?.name}</Td>
+                        <Td>
+                          <Tooltip
+                            placement="top"
+                            label={patient?.primaryInfo?.address}
+                            fontSize="xs"
+                          >
+                            <div>
+                              <CFaCopy
+                                onMouseEnter={() => {
+                                  setCopyAddress(patient?.primaryInfo?.address);
+                                }}
+                                onClick={onCopy}
+                              />
+                            </div>
+                          </Tooltip>
+                        </Td>
+                        <Td>{patient?.primaryInfo?.IC}</Td>
+                        <Td>{patient?.primaryInfo?.gender}</Td>
+                        <Td>{patient?.primaryInfo?.email}</Td>
+                        <Td>
+                          {convertDatetimeString(
+                            patient?.primaryInfo?.userSince?.toString()
+                          )}
+                        </Td>
+                      </Tr>
+                    );
+                  })
+              ),
+          })}
+        </Tbody>
+      </Table>
+    </TableContainer>
+  );
+
+  const patientStatsData = [
+    {
+      month: "Oct",
+      patients: 25,
+    },
+    {
+      month: "Nov",
+      patients: 15,
+    },
+    {
+      month: "Dec",
+      patients: 10,
+    },
+    {
+      month: "Jan",
+      patients: 25,
+    },
+    {
+      month: "Feb",
+      patients: 25,
+    },
+    {
+      month: "Mar",
+      patients: 25,
+    },
+  ];
+
+  const navigate = useNavigate();
   return (
     <Stack
       direction={"column"}
@@ -1006,23 +1243,121 @@ const AdminDashboard = ({ user }: DashboardProps) => {
         width="100%"
         spacing={6}
       >
-        <Card backgroundColor={"primaryBlue.400"} color="white" width="33%">
-          <CardHeader>
-            <Heading size="md">Total Patients</Heading>
-          </CardHeader>
-          <CardBody>Total patients</CardBody>
+        <Card
+          backgroundColor={"primaryBlue.400"}
+          color="white"
+          width="33%"
+          _hover={{
+            bgGradient: "linear(to-r, primaryBlue.300, primaryBlue.400)",
+            transform: "scale(1.05)",
+            transition: "transform 0.3s ease-in-out",
+            cursor: "pointer",
+          }}
+          onClick={() => {
+            navigate("/patients");
+          }}
+        >
+          <CardBody
+            display="flex"
+            flexDirection={"row"}
+            justifyContent="space-between"
+          >
+            <Stack dir={"col"} justifyContent={"space-between"}>
+              {renderComponent({
+                loading: {
+                  isLoading: isPatientListLoading,
+                  style: {
+                    height: "150px",
+                  },
+                },
+                error: {
+                  isError: isPatientListError,
+                  onErrorRetry: fetchPatientList,
+                },
+                component: (
+                  <Heading size="xl">{patientList?.patients?.length}</Heading>
+                ),
+              })}
+              <Heading size="sm">Total Patients</Heading>
+            </Stack>
+            <Avatar size="xl" bg="primaryBlue.100" icon={<FaUserGroup />} />
+          </CardBody>
         </Card>
-        <Card backgroundColor={"primaryBlue.400"} color="white" width="33%">
-          <CardHeader>
-            <Heading size="md">Total Doctors</Heading>
-          </CardHeader>
-          <CardBody>Total patients</CardBody>
+        <Card
+          backgroundColor={"primaryBlue.400"}
+          color="white"
+          width="33%"
+          _hover={{
+            bgGradient: "linear(to-r, primaryBlue.300, primaryBlue.400)",
+            transform: "scale(1.05)",
+            transition: "transform 0.3s ease-in-out",
+            cursor: "pointer",
+          }}
+          onClick={() => {
+            navigate("/doctors");
+          }}
+        >
+          <CardBody
+            display="flex"
+            flexDirection={"row"}
+            justifyContent="space-between"
+          >
+            <Stack dir={"col"} justifyContent={"space-between"}>
+              {renderComponent({
+                loading: {
+                  isLoading: isDoctorListLoading,
+                  style: {
+                    height: "150px",
+                  },
+                },
+                error: {
+                  isError: isDoctorListError,
+                  onErrorRetry: fetchDoctorList,
+                },
+                component: <Heading size="xl">{doctorList?.length}</Heading>,
+              })}
+              <Heading size="sm">Total Doctors</Heading>
+            </Stack>
+            <Avatar size="xl" bg="primaryBlue.100" icon={<FaUserDoctor />} />
+          </CardBody>
         </Card>
-        <Card backgroundColor={"primaryBlue.400"} color="white" width="33%">
-          <CardHeader>
-            <Heading size="md">Total Records</Heading>
-          </CardHeader>
-          <CardBody>Total patients</CardBody>
+        <Card
+          backgroundColor={"primaryBlue.400"}
+          color="white"
+          width="33%"
+          _hover={{
+            bgGradient: "linear(to-r, primaryBlue.300, primaryBlue.400)",
+            transform: "scale(1.05)",
+            transition: "transform 0.3s ease-in-out",
+            cursor: "pointer",
+          }}
+          onClick={() => {
+            navigate("/records");
+          }}
+        >
+          <CardBody
+            display="flex"
+            flexDirection={"row"}
+            justifyContent="space-between"
+          >
+            <Stack dir={"col"} justifyContent={"space-between"}>
+              {renderComponent({
+                loading: {
+                  isLoading: isRecordListLoading,
+                  style: {
+                    height: "150px",
+                  },
+                },
+                error: {
+                  isError: isRecordListError,
+                  onErrorRetry: fetchRecordList,
+                },
+                component: <Heading size="xl">{recordList?.length}</Heading>,
+              })}
+              <Heading size="sm">Total Records</Heading>
+            </Stack>
+            <Avatar size="xl" bg="primaryBlue.100" icon={<FaFileMedical />} />
+          </CardBody>
         </Card>
       </Stack>
       <Stack
@@ -1035,7 +1370,23 @@ const AdminDashboard = ({ user }: DashboardProps) => {
           <CardHeader>
             <Heading size="md">Patients Statistics</Heading>
           </CardHeader>
-          <CardBody>Stats</CardBody>
+          <CardBody>
+            <ResponsiveContainer>
+              <BarChart width={600} height={300} data={patientStatsData}>
+                <XAxis dataKey="month" stroke="#FFFFFF" />
+                <YAxis stroke="#FFFFFF" />
+                <ChartTooltip
+                  labelStyle={{
+                    color: "black",
+                  }}
+                  itemStyle={{
+                    color: "black",
+                  }}
+                />
+                <Bar dataKey="patients" fill="#FFFFFF" barSize={30} />
+              </BarChart>
+            </ResponsiveContainer>
+          </CardBody>
         </Card>
         <Card
           backgroundColor={"primaryBlue.400"}
@@ -1046,14 +1397,40 @@ const AdminDashboard = ({ user }: DashboardProps) => {
           <CardHeader>
             <Heading size="md">Other Statistics</Heading>
           </CardHeader>
-          <CardBody>Stats</CardBody>
+          <CardBody>
+            <BarChart width={600} height={300} data={patientStatsData}>
+              <XAxis dataKey="month" stroke="#FFFFFF" />
+              <YAxis stroke="#FFFFFF" />
+              <ChartTooltip
+                labelStyle={{
+                  color: "black",
+                }}
+                itemStyle={{
+                  color: "black",
+                }}
+              />
+              <Bar dataKey="patients" fill="#FFFFFF" barSize={30} />
+            </BarChart>
+          </CardBody>
         </Card>
       </Stack>
       <Card backgroundColor={"primaryBlue.400"} color="white">
         <CardHeader>
-          <Heading size="md">Patients List</Heading>
+          <Heading size="md" display={"flex"} justifyContent={"space-between"}>
+            Patients List
+            <Button
+              size="sm"
+              backgroundColor={"primaryBlue.50"}
+              color={"primaryBlue.500"}
+              onClick={() => {
+                navigate("/patients");
+              }}
+            >
+              Browse All
+            </Button>
+          </Heading>
         </CardHeader>
-        <CardBody>Patients Table</CardBody>
+        <CardBody>{patientsTable}</CardBody>
       </Card>
     </Stack>
   );
@@ -1072,7 +1449,6 @@ const Home = () => {
   }, [userData, setUser]);
 
   useEffect(() => {
-    console.log(user);
     if (!user.name && !user.IC && user.isLoggedIn) {
       fetchUserData();
     }

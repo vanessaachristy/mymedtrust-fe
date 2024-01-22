@@ -20,6 +20,7 @@ import {
   Alert,
   AlertIcon,
   AlertTitle,
+  Image,
 } from "@chakra-ui/react";
 import {
   FaUserAlt,
@@ -40,6 +41,7 @@ import { PATH } from "../../constants/path";
 import { Form, useNavigate } from "react-router-dom";
 import { useMutation } from "react-query";
 import axiosWithCredentials from "../../api/fetch";
+import MyMedtraceLogo from "../../assets/MymedtraceLogo.png";
 
 const CFaUserAlt = chakra(FaUserAlt);
 const CFaLock = chakra(FaLock);
@@ -238,7 +240,7 @@ const SignUp = () => {
         </FormControl>
         <FormControl isRequired>
           <InputGroup>
-            <InputLeftAddon children={"+65"} />
+            <InputLeftAddon children={"+65"} color={"primaryBlue.300"} />
             <Input
               type="tel"
               placeholder="Phone Number"
@@ -352,29 +354,32 @@ const SignUp = () => {
   );
 
   return (
-    <div className="flex justify-center items-center">
+    <div className="flex justify-center items-center text-white bg-primaryBlue-500">
       <div className="w-[60vw] h-auto flex flex-col justify-center items-center px-12 space-y-12">
-        <div className="bg-cyan-800 p-12 w-screen">
-          <div className="w-full text-white font-semibold text-2xl">
-            MyMedtrace
-          </div>
+        <div className="bg-primaryBlue-300 p-12 w-screen">
+          <Image src={MyMedtraceLogo} height={"70px"} />
         </div>
-        <div className="h-[80%] flex flex-col justify-center items-center w-full">
-          <Form onSubmit={handleSubmit}>
+        <div className="h-[80%] flex flex-col justify-center items-center w-full mb-24">
+          <h3>Start storing your health record securely!</h3>
+          <div>
+            Already have an account?{" "}
+            <Link color="yellow.100" href={PATH.Login}>
+              Login
+            </Link>
+          </div>
+          <Form
+            onSubmit={handleSubmit}
+            style={{
+              width: "80%",
+              padding: "12px",
+            }}
+          >
             <Stack
               spacing={6}
               padding={"12px"}
-              backgroundColor={"whiteAlpha.100"}
               width={"100%"}
               textAlign={"left"}
             >
-              <h3>Start storing your health record securely!</h3>
-              <div>
-                Already have an account?{" "}
-                <Link color="blue.400" href={PATH.Login}>
-                  Login
-                </Link>
-              </div>
               <FormControl isRequired>
                 <InputGroup>
                   <InputLeftElement
@@ -513,7 +518,7 @@ const SignUp = () => {
               </FormControl>
               <FormControl isRequired>
                 <InputGroup>
-                  <InputLeftAddon children={"+65"} />
+                  <InputLeftAddon children={"+65"} color={"primaryBlue.300"} />
                   <Input
                     type="tel"
                     placeholder="Phone Number"
@@ -609,8 +614,8 @@ const SignUp = () => {
               <Button
                 borderRadius={12}
                 type="submit"
-                colorScheme="blue"
                 width="full"
+                backgroundColor={"primaryBlue.50"}
                 isLoading={signupMutation.isLoading}
               >
                 Sign Up

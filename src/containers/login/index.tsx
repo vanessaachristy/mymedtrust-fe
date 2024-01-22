@@ -17,6 +17,7 @@ import {
   AlertIcon,
   AlertTitle,
   AlertDescription,
+  Image,
 } from "@chakra-ui/react";
 import { FaUserAlt, FaLock } from "react-icons/fa";
 import { PATH } from "../../constants/path";
@@ -25,6 +26,7 @@ import axiosWithCredentials from "../../api/fetch";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useUserContext } from "../../model/user/userContext";
 import LandingImage from "../../assets/landing.png";
+import MyMedtraceLogo from "../../assets/MymedtraceLogo.png";
 
 const CFaUserAlt = chakra(FaUserAlt);
 const CFaLock = chakra(FaLock);
@@ -95,17 +97,14 @@ const Login = () => {
   }, [loginMutation.isSuccess, loginMutation.isError]);
 
   return (
-    <div className="flex justify-between items-center">
+    <div className="flex justify-between items-center bg-primaryBlue-500 text-white">
       <div className="w-[50vw] h-screen flex flex-col justify-center items-center text-left px-12">
-        <div className="w-full text-cyan-800 font-semibold text-2xl">
-          MyMedtrace
-        </div>
+        <Image src={MyMedtraceLogo} height={"75px"} />
         <div className="h-[80%] flex flex-col justify-center items-center w-full">
           <form onSubmit={handleSubmit} className="w-full">
             <Stack
               spacing={4}
               padding={"12px"}
-              backgroundColor={"whiteAlpha.100"}
               width={"100%"}
               textAlign={"left"}
             >
@@ -140,39 +139,45 @@ const Login = () => {
                     onChange={handleInputChange}
                   />
                   <InputRightElement width="4.5rem">
-                    <Button h="1.75rem" size="sm" onClick={handleShowClick}>
+                    <Button
+                      h="1.75rem"
+                      size="sm"
+                      onClick={handleShowClick}
+                      bgColor={"primaryBlue.100"}
+                    >
                       {showPassword ? "Hide" : "Show"}
                     </Button>
                   </InputRightElement>
                 </InputGroup>
                 <FormHelperText textAlign="right">
-                  <Link>Forgot password?</Link>
+                  <Link color="yellow.100">Forgot password?</Link>
                 </FormHelperText>
               </FormControl>
               <Button
                 borderRadius={12}
                 type="submit"
-                colorScheme="blue"
+                bgColor={"primaryBlue.100"}
+                color="primaryBlue.500"
                 width="full"
                 isLoading={loginMutation.isLoading}
               >
                 Login
               </Button>
               {loginMutation.isError && (
-                <Alert status="error">
+                <Alert status="error" color="black">
                   <AlertIcon />
                   <AlertDescription>{unauthorizedMessage}</AlertDescription>
                 </Alert>
               )}
               {loginMutation.isSuccess && !loginMutation.isError && (
-                <Alert status="success">
+                <Alert status="success" color="black">
                   <AlertIcon />
                   <AlertTitle>Sign up successful!</AlertTitle>
                 </Alert>
               )}
               <div>
                 New to us?{" "}
-                <Link color="blue.400" href={PATH.SignUp}>
+                <Link color="yellow.100" href={PATH.SignUp}>
                   Sign up
                 </Link>
               </div>
@@ -186,7 +191,7 @@ const Login = () => {
           alt=""
           className="w-auto h-full block object-cover"
         />
-        <div className="absolute top-0 left-0 w-full h-full bg-cyan-800 bg-opacity-50"></div>
+        <div className="absolute top-0 left-0 w-full h-full bg-primaryBlue-200 bg-opacity-50"></div>
       </div>
     </div>
   );

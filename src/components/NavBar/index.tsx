@@ -1,13 +1,13 @@
 import {
   Box,
-  Divider,
   Popover,
   PopoverTrigger,
   Stack,
   Link,
   Spinner,
-  Heading,
   Image,
+  Icon,
+  chakra,
 } from "@chakra-ui/react";
 import {
   ADMIN_NAV,
@@ -15,7 +15,6 @@ import {
   NavItems,
   PATH,
   PATIENT_NAV,
-  PROFILE_NAV,
 } from "../../constants/path";
 import { useNavigate } from "react-router-dom";
 import { useUserContext } from "../../model/user/userContext";
@@ -57,8 +56,16 @@ const NavBar = () => {
                       e.preventDefault();
                       navigate(navItem.href);
                     }}
-                    className="hover:text-yellow-200 "
+                    className="hover:text-yellow-200"
+                    display={"flex"}
+                    alignItems={"center"}
                   >
+                    <Icon
+                      width={"30px"}
+                      height={"30px"}
+                      as={navItem.icon}
+                      paddingRight={"12px"}
+                    />
                     {navItem.label}
                   </Link>
                 </PopoverTrigger>

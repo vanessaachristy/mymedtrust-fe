@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
-import { useFetchDoctorPatientListQuery } from "../../api/doctor";
+import {
+  useFetchDoctorListQuery,
+  useFetchDoctorPatientListQuery,
+} from "../../api/doctor";
 import { useUserContext } from "../../model/user/userContext";
 import {
   Card,
@@ -23,7 +26,6 @@ import { FaCopy } from "react-icons/fa";
 import { convertDatetimeString } from "../../utils";
 import { SearchBar } from "../../components/SearchBar";
 import Fuse from "fuse.js";
-import { useFetchPatientListQuery } from "../../api/patient";
 import { UserType } from "../../constants/user";
 
 const Doctors = () => {
@@ -39,33 +41,15 @@ const Doctors = () => {
       fetchUserData();
     }
   }, [user, fetchUserData]);
-
   const {
-    data: doctorPatientList,
-    isLoading: isDoctorPatientListLoading,
-    isError: isDoctorPatientListError,
-    refetch: fetchDoctorPatientList,
-  } = useFetchDoctorPatientListQuery(user?.address);
-
-  const {
-    data: totalPatientList,
-    isLoading: isPatientListLoading,
-    isError: isPatientListError,
-    refetch: fetchPatientList,
-  } = useFetchPatientListQuery();
-
-  useEffect(() => {
-    if (user?.address && user?.userType === UserType.DOCTOR) {
-      fetchDoctorPatientList();
-    }
-  }, [user, fetchDoctorPatientList]);
+    data: doctorList,
+    isLoading: isDoctorListLoading,
+    isError: isDoctorListError,
+    refetch: fetchDoctorList,
+  } = useFetchDoctorListQuery();
 
   const [currSearch, setCurrSearch] = useState("");
-  const [currentList, setCurrentList] = useState(
-    user?.userType === UserType.DOCTOR
-      ? doctorPatientList?.patients
-      : totalPatientList?.patients
-  );
+  const [currentList, setCurrentList] = useState(doctorList);
 
   const options = {
     tokenize: false,
@@ -74,40 +58,25 @@ const Doctors = () => {
     keys: [
       "primaryInfo.name",
       "primaryInfo.email",
+      "qualification",
       "primaryInfo.address",
       "primaryInfo.IC",
     ],
   };
 
-  const fuse = new Fuse(
-    user?.userType === UserType.DOCTOR
-      ? doctorPatientList?.patients
-      : totalPatientList?.patients,
-    options
-  );
+  const fuse = new Fuse(doctorList, options);
 
   useEffect(() => {
     if (currSearch === "") {
-      setCurrentList(
-        user?.userType === UserType.DOCTOR
-          ? doctorPatientList?.patients
-          : totalPatientList?.patients
-      );
+      setCurrentList(doctorList);
     } else {
       setCurrentList(fuse.search(currSearch).map((data) => data.item));
     }
   }, [currSearch]);
 
   useEffect(() => {
-    if (user?.userType === UserType.DOCTOR)
-      setCurrentList(doctorPatientList?.patients);
-    else if (user?.userType === UserType.ADMIN)
-      setCurrentList(totalPatientList?.patients);
-  }, [doctorPatientList, totalPatientList, user?.userType]);
-
-  useEffect(() => {
-    console.log(currentList);
-  }, [currentList]);
+    setCurrentList(doctorList);
+  }, [doctorList]);
 
   const CFaCopy = chakra(FaCopy);
 
@@ -131,7 +100,7 @@ const Doctors = () => {
     }
   }, [hasCopied]);
 
-  const patientsTable = (
+  const doctorsTable = (
     <TableContainer width={"100%"} color={"white"}>
       <Table variant="striped" colorScheme="whiteAlpha" size="sm" color="white">
         <Thead paddingBottom={"12px"}>
@@ -139,6 +108,7 @@ const Doctors = () => {
             <Th color="white">No.</Th>
             <Th color="white">Name</Th>
             <Th color="white">Address</Th>
+            <Th color="white">Field</Th>
             <Th color="white">IC</Th>
             <Th color="white">Gender</Th>
             <Th color="white">E-mail</Th>
@@ -148,14 +118,14 @@ const Doctors = () => {
         <Tbody>
           {renderComponent({
             loading: {
-              isLoading: isDoctorPatientListLoading,
+              isLoading: isDoctorListLoading,
               style: {
                 height: "150px",
               },
             },
             error: {
-              isError: isDoctorPatientListError,
-              onErrorRetry: fetchDoctorPatientList,
+              isError: isDoctorListError,
+              onErrorRetry: fetchDoctorList,
             },
             component:
               currentList?.length === 0 ? (
@@ -171,33 +141,35 @@ const Doctors = () => {
                       Date.parse(b.primaryInfo.userSince.timestamp) -
                       Date.parse(a.primaryInfo.userSince.timestamp)
                   )
-                  ?.map((patient: any, index: number) => {
+                  ?.map((doctor: any, index: number) => {
                     return (
                       <Tr>
                         <Td>{index + 1}</Td>
-                        <Td>{patient?.primaryInfo?.name}</Td>
+                        <Td>{doctor?.primaryInfo?.name}</Td>
                         <Td>
                           <Tooltip
+                            width={"max-content"}
                             placement="top-start"
-                            label={patient?.primaryInfo?.address}
-                            fontSize="md"
+                            label={doctor?.primaryInfo?.address}
+                            fontSize="xs"
                           >
                             <div>
                               <CFaCopy
                                 onMouseEnter={() => {
-                                  setCopyAddress(patient?.primaryInfo?.address);
+                                  setCopyAddress(doctor?.primaryInfo?.address);
                                 }}
                                 onClick={onCopy}
                               />
                             </div>
                           </Tooltip>
                         </Td>
-                        <Td>{patient?.primaryInfo?.IC}</Td>
-                        <Td>{patient?.primaryInfo?.gender}</Td>
-                        <Td>{patient?.primaryInfo?.email}</Td>
+                        <Td>{doctor?.qualification}</Td>
+                        <Td>{doctor?.primaryInfo?.IC}</Td>
+                        <Td>{doctor?.primaryInfo?.gender}</Td>
+                        <Td>{doctor?.primaryInfo?.email}</Td>
                         <Td>
                           {convertDatetimeString(
-                            patient?.primaryInfo?.userSince?.toString()
+                            doctor?.primaryInfo?.userSince?.toString()
                           )}
                         </Td>
                       </Tr>
@@ -216,7 +188,7 @@ const Doctors = () => {
         Doctors
       </Heading>
       <SearchBar
-        placeholder="Search patient name / address / email / IC"
+        placeholder="Search doctor name / address / field / email / IC"
         onChange={(value) => setCurrSearch(value)}
         onEnter={(value) => setCurrSearch(value)}
       />
@@ -229,25 +201,16 @@ const Doctors = () => {
         <CardBody>
           {renderComponent({
             loading: {
-              isLoading:
-                user?.userType === UserType.DOCTOR
-                  ? isDoctorPatientListLoading
-                  : isPatientListLoading,
+              isLoading: isDoctorListLoading,
               style: {
                 height: "150px",
               },
             },
             error: {
-              isError:
-                user?.userType === UserType.DOCTOR
-                  ? isDoctorPatientListError
-                  : isPatientListError,
-              onErrorRetry:
-                user?.userType === UserType.DOCTOR
-                  ? fetchDoctorPatientList
-                  : fetchPatientList,
+              isError: isDoctorListError,
+              onErrorRetry: fetchDoctorList,
             },
-            component: patientsTable,
+            component: doctorsTable,
           })}
         </CardBody>
       </Card>

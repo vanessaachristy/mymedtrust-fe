@@ -866,7 +866,9 @@ const PatientDashboard = ({ user }: DashboardProps) => {
           >
             <Stack direction={"row"} spacing={4} alignItems={"center"}>
               <ObservationIcon color="white" size="30px" />
-              <Heading size="md">To Be Approved</Heading>
+              <Heading size="md" color="white">
+                To Be Approved
+              </Heading>
             </Stack>
             <Button
               size="sm"

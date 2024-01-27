@@ -76,6 +76,7 @@ const ObservationInputCard = () => {
     account: string;
     patient: string;
     doctor: string;
+    additionalNote: string;
   } = {
     account: user.address,
     doctor: user.address,
@@ -126,10 +127,16 @@ const ObservationInputCard = () => {
         },
       },
     ],
+    additionalNote: "",
   };
 
   const [formData, setFormData] = useState<
-    Observation & { account: string; patient: string; doctor: string }
+    Observation & {
+      account: string;
+      patient: string;
+      doctor: string;
+      additionalNote: string;
+    }
   >({
     account: user.address,
     doctor: user.address,
@@ -180,6 +187,7 @@ const ObservationInputCard = () => {
         },
       },
     ],
+    additionalNote: "",
   });
 
   const Patient = (
@@ -608,7 +616,7 @@ const ObservationInputCard = () => {
       </CardHeader>
       <CardBody>
         <Stack direction={"column"} spacing={4} divider={<StackDivider />}>
-          <div>
+          <Stack direction="column" spacing={2}>
             <Heading size="xs" textTransform={"uppercase"}>
               Low
             </Heading>
@@ -671,8 +679,8 @@ const ObservationInputCard = () => {
                 </InputGroup>
               </FormControl>
             </Stack>
-          </div>
-          <div>
+          </Stack>
+          <Stack direction="column">
             <Heading size="xs" textTransform={"uppercase"}>
               High
             </Heading>
@@ -735,7 +743,38 @@ const ObservationInputCard = () => {
                 </InputGroup>
               </FormControl>
             </Stack>
-          </div>
+          </Stack>
+        </Stack>
+      </CardBody>
+    </Card>
+  );
+
+  const AdditionalNote = (
+    <Card>
+      <CardHeader>
+        <Heading size="sm" textTransform={"uppercase"}>
+          Additional Note
+        </Heading>
+      </CardHeader>
+      <CardBody>
+        <Stack direction={"row"} spacing={4}>
+          <FormControl>
+            <InputGroup>
+              <Input
+                type="text"
+                placeholder="Additional doctor note"
+                name="additionalNote"
+                value={formData?.additionalNote}
+                onChange={(e) => {
+                  const { value } = e.target;
+                  setFormData({
+                    ...formData,
+                    additionalNote: value,
+                  });
+                }}
+              />
+            </InputGroup>
+          </FormControl>
         </Stack>
       </CardBody>
     </Card>
@@ -803,6 +842,7 @@ const ObservationInputCard = () => {
           {Performer}
           {ValueQuantity}
           {ReferenceRange}
+          {AdditionalNote}
         </Stack>
         <Button
           type="submit"

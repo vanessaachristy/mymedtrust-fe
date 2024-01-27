@@ -1,4 +1,4 @@
-import { Heading } from "@chakra-ui/react";
+import { Heading, Skeleton, Stack } from "@chakra-ui/react";
 import AllergyCard from "../../components/AllergyCard";
 import { renderComponent } from "../../utils/renderComponent";
 import { useGetAllergyQuery } from "../../api/allergy";
@@ -37,10 +37,22 @@ const Allergies = () => {
 
   return (
     <div className="flex flex-col items-center justify-start p-6 w-full">
-      <Heading color="yellow.200">Allergies</Heading>
+      <Heading color="yellow.200" marginBottom={8}>
+        Allergies
+      </Heading>
       {renderComponent({
         loading: {
           isLoading: isLoading,
+          style: {
+            width: "80%",
+          },
+          component: (
+            <Stack width={"100%"} spacing={4}>
+              <Skeleton height="240px" />
+              <Skeleton height="240px" />
+              <Skeleton height="240px" />
+            </Stack>
+          ),
         },
         error: {
           isError: isError,

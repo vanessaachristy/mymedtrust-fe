@@ -404,7 +404,7 @@ export const PatientRecords = ({ user }: { user: User }) => {
         width={"100%"}
         className="box-border bg-gradient-to-t from-primaryBlue-200 to-primaryBlue-400 text-white mb-4"
       >
-        <CardHeader>
+        <CardHeader color="white">
           <Heading size="md">To Be Approved</Heading>
         </CardHeader>
         <CardBody className="flex flex-col justify-start items-center">
@@ -429,7 +429,7 @@ export const PatientRecords = ({ user }: { user: User }) => {
           width={"100%"}
           className="box-border bg-gradient-to-t from-primaryBlue-200 to-primaryBlue-400 text-white"
         >
-          <CardHeader>
+          <CardHeader color="white">
             <Heading size="md">Approved</Heading>
           </CardHeader>
           <CardBody className="flex flex-col justify-start items-center">
@@ -453,7 +453,7 @@ export const PatientRecords = ({ user }: { user: User }) => {
           width={"100%"}
           className="box-border bg-gradient-to-t from-primaryBlue-200 to-primaryBlue-400 text-white"
         >
-          <CardHeader>
+          <CardHeader color="white">
             <Heading size="md">Declined</Heading>
           </CardHeader>
           <CardBody className="flex flex-col justify-start items-center">

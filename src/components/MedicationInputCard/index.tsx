@@ -74,6 +74,7 @@ const MedicationInputCard = () => {
     account: string;
     patient: string;
     doctor: string;
+    additionalNote: string;
   } = {
     account: user.address,
     doctor: user.address,
@@ -126,6 +127,7 @@ const MedicationInputCard = () => {
       lotNumber: "",
       expirationDate: "",
     },
+    additionalNote: "",
   };
 
   const [formData, setFormData] = useState<
@@ -133,6 +135,7 @@ const MedicationInputCard = () => {
       account: string;
       patient: string;
       doctor: string;
+      additionalNote: string;
     }
   >(emptyFormData);
 
@@ -432,238 +435,242 @@ const MedicationInputCard = () => {
           </Heading>
         </CardHeader>
         <CardBody>
-          <FormControl>
-            <FormLabel>Item Reference</FormLabel>
-            <InputGroup>
-              <Input
-                type="text"
-                placeholder="Reference"
-                name="reference"
-                value={formData?.ingredient?.[0]?.itemReference?.reference}
-                onChange={(e) => {
-                  const { value } = e.target;
-                  setFormData({
-                    ...formData,
-                    ingredient: [
-                      {
-                        ...formData?.ingredient?.[0],
-                        itemReference: {
-                          reference: value,
+          <Stack direction={"column"} spacing={4}>
+            <FormControl>
+              <FormLabel>Item Reference</FormLabel>
+              <InputGroup>
+                <Input
+                  type="text"
+                  placeholder="Reference"
+                  name="reference"
+                  value={formData?.ingredient?.[0]?.itemReference?.reference}
+                  onChange={(e) => {
+                    const { value } = e.target;
+                    setFormData({
+                      ...formData,
+                      ingredient: [
+                        {
+                          ...formData?.ingredient?.[0],
+                          itemReference: {
+                            reference: value,
+                          },
                         },
-                      },
-                    ],
-                  });
-                }}
-              />
-            </InputGroup>
-          </FormControl>
-          <Divider color="gray.300" />
-          <Stack>
-            <Heading size="sm">Numerator</Heading>
-            <Stack direction={"row"} spacing={4}>
-              <FormControl>
-                <FormLabel>Value</FormLabel>
-                <InputGroup>
-                  <Input
-                    type="number"
-                    placeholder="Value"
-                    name="value"
-                    value={
-                      formData?.ingredient?.[0]?.strength?.numerator?.value
-                    }
-                    onChange={(e) => {
-                      const { value } = e.target;
-                      setFormData({
-                        ...formData,
-                        ingredient: [
-                          {
-                            ...formData?.ingredient?.[0],
-                            strength: {
-                              ...formData?.ingredient?.[0]?.strength,
-                              numerator: {
-                                ...formData?.ingredient?.[0]?.strength
-                                  ?.numerator,
-                                value: Number(value),
+                      ],
+                    });
+                  }}
+                />
+              </InputGroup>
+            </FormControl>
+            <Divider color="gray.300" />
+            <Stack>
+              <Heading size="sm">Numerator</Heading>
+              <Stack direction={"row"} spacing={4}>
+                <FormControl>
+                  <FormLabel>Value</FormLabel>
+                  <InputGroup>
+                    <Input
+                      type="number"
+                      placeholder="Value"
+                      name="value"
+                      value={
+                        formData?.ingredient?.[0]?.strength?.numerator?.value
+                      }
+                      onChange={(e) => {
+                        const { value } = e.target;
+                        setFormData({
+                          ...formData,
+                          ingredient: [
+                            {
+                              ...formData?.ingredient?.[0],
+                              strength: {
+                                ...formData?.ingredient?.[0]?.strength,
+                                numerator: {
+                                  ...formData?.ingredient?.[0]?.strength
+                                    ?.numerator,
+                                  value: Number(value),
+                                },
                               },
                             },
-                          },
-                        ],
-                      });
-                    }}
-                  />
-                </InputGroup>
-              </FormControl>
-              <FormControl>
-                <FormLabel>System</FormLabel>
-                <InputGroup>
-                  <Select
-                    placeholder="System"
-                    name="system"
-                    value={
-                      formData?.ingredient?.[0]?.strength?.numerator?.system
-                    }
-                    onChange={(e) => {
-                      const { value } = e.target;
-                      setFormData({
-                        ...formData,
-                        ingredient: [
-                          {
-                            ...formData?.ingredient?.[0],
-                            strength: {
-                              ...formData?.ingredient?.[0]?.strength,
-                              numerator: {
-                                ...formData?.ingredient?.[0]?.strength
-                                  ?.numerator,
-                                system: value,
+                          ],
+                        });
+                      }}
+                    />
+                  </InputGroup>
+                </FormControl>
+                <FormControl>
+                  <FormLabel>System</FormLabel>
+                  <InputGroup>
+                    <Select
+                      placeholder="System"
+                      name="system"
+                      value={
+                        formData?.ingredient?.[0]?.strength?.numerator?.system
+                      }
+                      onChange={(e) => {
+                        const { value } = e.target;
+                        setFormData({
+                          ...formData,
+                          ingredient: [
+                            {
+                              ...formData?.ingredient?.[0],
+                              strength: {
+                                ...formData?.ingredient?.[0]?.strength,
+                                numerator: {
+                                  ...formData?.ingredient?.[0]?.strength
+                                    ?.numerator,
+                                  system: value,
+                                },
                               },
                             },
-                          },
-                        ],
-                      });
-                    }}
-                  >
-                    <option value="http://unitsofmeasure.org">
-                      http://unitsofmeasure.org
-                    </option>
-                  </Select>
-                </InputGroup>
-              </FormControl>
-              <FormControl>
-                <FormLabel>Code</FormLabel>
-                <InputGroup>
-                  <Input
-                    type="text"
-                    placeholder="Code"
-                    name="code"
-                    value={formData?.ingredient?.[0]?.strength?.numerator?.code}
-                    onChange={(e) => {
-                      const { value } = e.target;
-                      setFormData({
-                        ...formData,
-                        ingredient: [
-                          {
-                            ...formData?.ingredient?.[0],
-                            strength: {
-                              ...formData?.ingredient?.[0]?.strength,
-                              numerator: {
-                                ...formData?.ingredient?.[0]?.strength
-                                  ?.numerator,
-                                code: value,
+                          ],
+                        });
+                      }}
+                    >
+                      <option value="http://unitsofmeasure.org">
+                        http://unitsofmeasure.org
+                      </option>
+                    </Select>
+                  </InputGroup>
+                </FormControl>
+                <FormControl>
+                  <FormLabel>Code</FormLabel>
+                  <InputGroup>
+                    <Input
+                      type="text"
+                      placeholder="Code"
+                      name="code"
+                      value={
+                        formData?.ingredient?.[0]?.strength?.numerator?.code
+                      }
+                      onChange={(e) => {
+                        const { value } = e.target;
+                        setFormData({
+                          ...formData,
+                          ingredient: [
+                            {
+                              ...formData?.ingredient?.[0],
+                              strength: {
+                                ...formData?.ingredient?.[0]?.strength,
+                                numerator: {
+                                  ...formData?.ingredient?.[0]?.strength
+                                    ?.numerator,
+                                  code: value,
+                                },
                               },
                             },
-                          },
-                        ],
-                      });
-                    }}
-                  />
-                </InputGroup>
-              </FormControl>
+                          ],
+                        });
+                      }}
+                    />
+                  </InputGroup>
+                </FormControl>
+              </Stack>
             </Stack>
-          </Stack>
-          <Divider color="gray.300" />
+            <Divider color="gray.300" />
 
-          <Stack>
-            <Heading size="sm">Denominator</Heading>
-            <Stack direction={"row"} spacing={4}>
-              <FormControl>
-                <FormLabel>Value</FormLabel>
-                <InputGroup>
-                  <Input
-                    type="number"
-                    placeholder="Value"
-                    name="value"
-                    value={
-                      formData?.ingredient?.[0]?.strength?.denominator?.value
-                    }
-                    onChange={(e) => {
-                      const { value } = e.target;
-                      setFormData({
-                        ...formData,
-                        ingredient: [
-                          {
-                            ...formData?.ingredient?.[0],
-                            strength: {
-                              ...formData?.ingredient?.[0]?.strength,
-                              denominator: {
-                                ...formData?.ingredient?.[0]?.strength
-                                  ?.denominator,
-                                value: Number(value),
+            <Stack>
+              <Heading size="sm">Denominator</Heading>
+              <Stack direction={"row"} spacing={4}>
+                <FormControl>
+                  <FormLabel>Value</FormLabel>
+                  <InputGroup>
+                    <Input
+                      type="number"
+                      placeholder="Value"
+                      name="value"
+                      value={
+                        formData?.ingredient?.[0]?.strength?.denominator?.value
+                      }
+                      onChange={(e) => {
+                        const { value } = e.target;
+                        setFormData({
+                          ...formData,
+                          ingredient: [
+                            {
+                              ...formData?.ingredient?.[0],
+                              strength: {
+                                ...formData?.ingredient?.[0]?.strength,
+                                denominator: {
+                                  ...formData?.ingredient?.[0]?.strength
+                                    ?.denominator,
+                                  value: Number(value),
+                                },
                               },
                             },
-                          },
-                        ],
-                      });
-                    }}
-                  />
-                </InputGroup>
-              </FormControl>
-              <FormControl>
-                <FormLabel>System</FormLabel>
-                <InputGroup>
-                  <Select
-                    placeholder="System"
-                    name="system"
-                    value={
-                      formData?.ingredient?.[0]?.strength?.denominator?.system
-                    }
-                    onChange={(e) => {
-                      const { value } = e.target;
-                      setFormData({
-                        ...formData,
-                        ingredient: [
-                          {
-                            ...formData?.ingredient?.[0],
-                            strength: {
-                              ...formData?.ingredient?.[0]?.strength,
-                              denominator: {
-                                ...formData?.ingredient?.[0]?.strength
-                                  ?.denominator,
-                                system: value,
+                          ],
+                        });
+                      }}
+                    />
+                  </InputGroup>
+                </FormControl>
+                <FormControl>
+                  <FormLabel>System</FormLabel>
+                  <InputGroup>
+                    <Select
+                      placeholder="System"
+                      name="system"
+                      value={
+                        formData?.ingredient?.[0]?.strength?.denominator?.system
+                      }
+                      onChange={(e) => {
+                        const { value } = e.target;
+                        setFormData({
+                          ...formData,
+                          ingredient: [
+                            {
+                              ...formData?.ingredient?.[0],
+                              strength: {
+                                ...formData?.ingredient?.[0]?.strength,
+                                denominator: {
+                                  ...formData?.ingredient?.[0]?.strength
+                                    ?.denominator,
+                                  system: value,
+                                },
                               },
                             },
-                          },
-                        ],
-                      });
-                    }}
-                  >
-                    <option value="http://terminology.hl7.org/CodeSystem/v3-orderableDrugForm">
-                      http://terminology.hl7.org/CodeSystem/v3-orderableDrugForm
-                    </option>
-                  </Select>
-                </InputGroup>
-              </FormControl>
-              <FormControl>
-                <FormLabel>Code</FormLabel>
-                <InputGroup>
-                  <Input
-                    type="text"
-                    placeholder="Code"
-                    name="code"
-                    value={
-                      formData?.ingredient?.[0]?.strength?.denominator?.code
-                    }
-                    onChange={(e) => {
-                      const { value } = e.target;
-                      setFormData({
-                        ...formData,
-                        ingredient: [
-                          {
-                            ...formData?.ingredient?.[0],
-                            strength: {
-                              ...formData?.ingredient?.[0]?.strength,
-                              denominator: {
-                                ...formData?.ingredient?.[0]?.strength
-                                  ?.denominator,
-                                code: value,
+                          ],
+                        });
+                      }}
+                    >
+                      <option value="http://terminology.hl7.org/CodeSystem/v3-orderableDrugForm">
+                        http://terminology.hl7.org/CodeSystem/v3-orderableDrugForm
+                      </option>
+                    </Select>
+                  </InputGroup>
+                </FormControl>
+                <FormControl>
+                  <FormLabel>Code</FormLabel>
+                  <InputGroup>
+                    <Input
+                      type="text"
+                      placeholder="Code"
+                      name="code"
+                      value={
+                        formData?.ingredient?.[0]?.strength?.denominator?.code
+                      }
+                      onChange={(e) => {
+                        const { value } = e.target;
+                        setFormData({
+                          ...formData,
+                          ingredient: [
+                            {
+                              ...formData?.ingredient?.[0],
+                              strength: {
+                                ...formData?.ingredient?.[0]?.strength,
+                                denominator: {
+                                  ...formData?.ingredient?.[0]?.strength
+                                    ?.denominator,
+                                  code: value,
+                                },
                               },
                             },
-                          },
-                        ],
-                      });
-                    }}
-                  />
-                </InputGroup>
-              </FormControl>
+                          ],
+                        });
+                      }}
+                    />
+                  </InputGroup>
+                </FormControl>
+              </Stack>
             </Stack>
           </Stack>
         </CardBody>
@@ -822,6 +829,37 @@ const MedicationInputCard = () => {
     </FormControl>
   );
 
+  const AdditionalNote = (
+    <Card>
+      <CardHeader>
+        <Heading size="sm" textTransform={"uppercase"}>
+          Additional Note
+        </Heading>
+      </CardHeader>
+      <CardBody>
+        <Stack direction={"row"} spacing={4}>
+          <FormControl>
+            <InputGroup>
+              <Input
+                type="text"
+                placeholder="Additional doctor note"
+                name="additionalNote"
+                value={formData?.additionalNote}
+                onChange={(e) => {
+                  const { value } = e.target;
+                  setFormData({
+                    ...formData,
+                    additionalNote: value,
+                  });
+                }}
+              />
+            </InputGroup>
+          </FormControl>
+        </Stack>
+      </CardBody>
+    </Card>
+  );
+
   useEffect(() => {
     console.log(formData);
   }, [formData]);
@@ -862,10 +900,6 @@ const MedicationInputCard = () => {
 
   const navigate = useNavigate();
 
-  const handleToAllergiesList = () => {
-    navigate("/medications");
-  };
-
   return (
     <div className="w-[70%]">
       <Form
@@ -887,6 +921,7 @@ const MedicationInputCard = () => {
           {Manufacturer}
           {Ingredient}
           {Batch}
+          {AdditionalNote}
         </Stack>
         <Button
           type="submit"
@@ -908,7 +943,7 @@ const MedicationInputCard = () => {
         <ModalOverlay />
         <ModalContent>
           <ModalHeader textAlign={"center"}>
-            Observations successfully added!
+            Medications successfully added!
           </ModalHeader>
           <ModalBody className="flex flex-col justify-center items-center">
             <CBsPatchCheckFill color={"green.300"} size={150} />
@@ -923,9 +958,6 @@ const MedicationInputCard = () => {
           <ModalFooter>
             <Button variant="ghost" mr={3} onClick={handleCloseModal}>
               Close
-            </Button>
-            <Button variant="solid" onClick={handleToAllergiesList}>
-              Go to Allergies
             </Button>
           </ModalFooter>
         </ModalContent>

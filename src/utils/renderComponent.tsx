@@ -5,6 +5,7 @@ type RenderComponentProps = {
   loading: {
     isLoading: boolean;
     style?: React.CSSProperties;
+    component?: ReactNode;
   };
   error: {
     isError: boolean;
@@ -22,7 +23,7 @@ export const renderComponent = ({
   if (loading.isLoading) {
     return (
       <div style={loading.style} className="flex justify-center items-center">
-        <Spinner />
+        {loading.component ? loading.component : <Spinner />}
       </div>
     );
   }

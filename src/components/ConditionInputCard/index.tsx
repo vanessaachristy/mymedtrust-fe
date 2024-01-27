@@ -81,6 +81,7 @@ const ConditionInputCard = () => {
     account: string;
     patient: string;
     doctor: string;
+    additionalNote: string;
   } = {
     account: user.address,
     doctor: user.address,
@@ -182,12 +183,18 @@ const ConditionInputCard = () => {
         ],
       },
     ],
+    additionalNote: "",
   };
 
   const CBsPatchCheckFill = chakra(BsPatchCheckFill);
 
   const [formData, setFormData] = useState<
-    Condition & { account: string; patient: string; doctor: string }
+    Condition & {
+      account: string;
+      patient: string;
+      doctor: string;
+      additionalNote: string;
+    }
   >({
     account: user.address,
     doctor: user.address,
@@ -289,6 +296,7 @@ const ConditionInputCard = () => {
         ],
       },
     ],
+    additionalNote: "",
   });
 
   const Patient = (
@@ -716,6 +724,12 @@ const ConditionInputCard = () => {
     </Card>
   );
 
+  const enum SeverityCode {
+    SEVERE = "severe",
+    MODERATE = "moderate",
+    MILD = "mild",
+  }
+
   const Severity = (
     <Card>
       <CardHeader>
@@ -779,29 +793,32 @@ const ConditionInputCard = () => {
           </FormControl>
           <FormControl>
             <FormLabel>Display</FormLabel>
-            <InputGroup>
-              <Input
-                type="text"
-                placeholder="Display"
-                name="display"
-                value={formData?.severity?.coding?.[0].display}
-                onChange={(e) => {
-                  const { value } = e.target;
-                  const coding = formData?.severity?.coding?.[0];
-                  setFormData({
-                    ...formData,
-                    severity: {
-                      coding: [
-                        {
-                          ...coding,
-                          display: value,
-                        },
-                      ],
-                    },
-                  });
-                }}
-              />
-            </InputGroup>
+            <Select
+              placeholder="Display"
+              name="display"
+              value={formData?.severity?.coding?.[0].display}
+              onChange={(e) => {
+                const { value } = e.target;
+                const coding = formData?.severity?.coding?.[0];
+                setFormData({
+                  ...formData,
+                  severity: {
+                    coding: [
+                      {
+                        ...coding,
+                        display: value,
+                      },
+                    ],
+                  },
+                });
+              }}
+            >
+              <option value={SeverityCode.MILD}>{SeverityCode.MILD}</option>
+              <option value={SeverityCode.MODERATE}>
+                {SeverityCode.MODERATE}
+              </option>{" "}
+              <option value={SeverityCode.SEVERE}>{SeverityCode.SEVERE}</option>
+            </Select>
           </FormControl>
         </Stack>
       </CardBody>
@@ -1135,6 +1152,37 @@ const ConditionInputCard = () => {
     </Card>
   );
 
+  const AdditionalNote = (
+    <Card>
+      <CardHeader>
+        <Heading size="sm" textTransform={"uppercase"}>
+          Additional Note
+        </Heading>
+      </CardHeader>
+      <CardBody>
+        <Stack direction={"row"} spacing={4}>
+          <FormControl>
+            <InputGroup>
+              <Input
+                type="text"
+                placeholder="Additional doctor note"
+                name="additionalNote"
+                value={formData?.additionalNote}
+                onChange={(e) => {
+                  const { value } = e.target;
+                  setFormData({
+                    ...formData,
+                    additionalNote: value,
+                  });
+                }}
+              />
+            </InputGroup>
+          </FormControl>
+        </Stack>
+      </CardBody>
+    </Card>
+  );
+
   useEffect(() => {
     console.log(formData);
   }, [formData]);
@@ -1181,10 +1229,6 @@ const ConditionInputCard = () => {
   }, [addConditionMutation.isSuccess, addConditionMutation.isError]);
 
   const navigate = useNavigate();
-
-  const handleToConditionList = () => {
-    navigate("/conditions");
-  };
   return (
     <div className="w-[70%]">
       <Form
@@ -1211,6 +1255,7 @@ const ConditionInputCard = () => {
           {BodySite}
           {OnsetDateTime}
           {AbatementDateTime}
+          {AdditionalNote}
         </Stack>
         <Button
           type="submit"
@@ -1246,9 +1291,6 @@ const ConditionInputCard = () => {
             <ModalFooter>
               <Button variant="ghost" mr={3} onClick={handleCloseModal}>
                 Close
-              </Button>
-              <Button variant="solid" onClick={handleToConditionList}>
-                Go to Conditions
               </Button>
             </ModalFooter>
           </ModalContent>

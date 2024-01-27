@@ -3,7 +3,7 @@ import ObservationCard from "../../components/ObservationCard";
 import { useUserContext } from "../../model/user/userContext";
 import { useGetObservationsQuery } from "../../api/observation";
 import { Observation } from "fhir/r4";
-import { Heading, Spinner } from "@chakra-ui/react";
+import { Heading, Skeleton, Spinner, Stack } from "@chakra-ui/react";
 import { renderComponent } from "../../utils/renderComponent";
 import { useFetchUserDetailQuery } from "../../api/user";
 
@@ -36,10 +36,22 @@ const Observations = () => {
   }, [user, fetchObservations]);
   return (
     <div className="flex flex-col items-center justify-start p-6 w-full">
-      <Heading color="yellow.200">Observation</Heading>
+      <Heading color="yellow.200" marginBottom={8}>
+        Observation
+      </Heading>
       {renderComponent({
         loading: {
           isLoading: isLoading,
+          style: {
+            width: "80%",
+          },
+          component: (
+            <Stack width={"100%"} spacing={4}>
+              <Skeleton height="240px" />
+              <Skeleton height="240px" />
+              <Skeleton height="240px" />
+            </Stack>
+          ),
         },
         error: {
           isError: isError,

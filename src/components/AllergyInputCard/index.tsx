@@ -74,6 +74,7 @@ const AllergyInputCard = () => {
     account: string;
     patientAddr: string;
     doctorAddr: string;
+    additionalNote: string;
   } = {
     account: user.address,
     doctorAddr: user.address,
@@ -152,6 +153,7 @@ const AllergyInputCard = () => {
         severity: "mild",
       },
     ],
+    additionalNote: "",
   };
 
   const [formData, setFormData] = useState<
@@ -159,6 +161,7 @@ const AllergyInputCard = () => {
       account: string;
       patientAddr: string;
       doctorAddr: string;
+      additionalNote: string;
     }
   >(emptyFormData);
 
@@ -726,28 +729,150 @@ const AllergyInputCard = () => {
         </Heading>
       </CardHeader>
       <CardBody>
-        <Stack spacing={2}>
-          <Heading size="sm">Manifestation</Heading>
-          <Stack direction={"row"} spacing={4}>
-            <FormControl isRequired>
-              <FormLabel>System</FormLabel>
-              <Select
-                placeholder="System"
-                name="system"
-                value={
-                  formData?.reaction?.[0].manifestation?.[0]?.coding?.[0].system
-                }
-                onChange={(e) => {
-                  const { value } = e.target;
-                  const coding =
-                    formData?.reaction?.[0].manifestation?.[0]?.coding?.[0];
-                  setFormData({
-                    ...formData,
-                    reaction: [
-                      {
-                        ...formData?.reaction?.[0],
-                        manifestation: [
+        <Stack direction={"column"} spacing={4}>
+          <Stack spacing={2}>
+            <Heading size="sm">Manifestation</Heading>
+            <Stack direction={"row"} spacing={4}>
+              <FormControl isRequired>
+                <FormLabel>System</FormLabel>
+                <Select
+                  placeholder="System"
+                  name="system"
+                  value={
+                    formData?.reaction?.[0].manifestation?.[0]?.coding?.[0]
+                      .system
+                  }
+                  onChange={(e) => {
+                    const { value } = e.target;
+                    const coding =
+                      formData?.reaction?.[0].manifestation?.[0]?.coding?.[0];
+                    setFormData({
+                      ...formData,
+                      reaction: [
+                        {
+                          ...formData?.reaction?.[0],
+                          manifestation: [
+                            {
+                              coding: [
+                                {
+                                  ...coding,
+                                  system: value,
+                                },
+                              ],
+                            },
+                          ],
+                        },
+                      ],
+                    });
+                  }}
+                >
+                  <option value="http://snomed.info/sct">
+                    http://snomed.info/sct
+                  </option>
+                </Select>
+              </FormControl>
+              <FormControl isRequired>
+                <FormLabel>Code</FormLabel>
+                <InputGroup>
+                  <Input
+                    type="text"
+                    placeholder="Code"
+                    name="code"
+                    value={
+                      formData?.reaction?.[0].manifestation?.[0]?.coding?.[0]
+                        .code
+                    }
+                    onChange={(e) => {
+                      const { value } = e.target;
+                      const coding =
+                        formData?.reaction?.[0].manifestation?.[0]?.coding?.[0];
+                      setFormData({
+                        ...formData,
+                        reaction: [
                           {
+                            ...formData?.reaction?.[0],
+                            manifestation: [
+                              {
+                                coding: [
+                                  {
+                                    ...coding,
+                                    code: value,
+                                  },
+                                ],
+                              },
+                            ],
+                          },
+                        ],
+                      });
+                    }}
+                  />
+                </InputGroup>
+              </FormControl>
+              <FormControl isRequired>
+                <FormLabel>Display</FormLabel>
+                <InputGroup>
+                  <Input
+                    type="text"
+                    placeholder="Display"
+                    name="display"
+                    value={
+                      formData?.reaction?.[0].manifestation?.[0]?.coding?.[0]
+                        .display
+                    }
+                    onChange={(e) => {
+                      const { value } = e.target;
+                      const coding =
+                        formData?.reaction?.[0].manifestation?.[0]?.coding?.[0];
+                      setFormData({
+                        ...formData,
+                        reaction: [
+                          {
+                            ...formData?.reaction?.[0],
+                            manifestation: [
+                              {
+                                coding: [
+                                  {
+                                    ...coding,
+                                    display: value,
+                                  },
+                                ],
+                              },
+                            ],
+                          },
+                        ],
+                      });
+                    }}
+                  />
+                </InputGroup>
+              </FormControl>
+            </Stack>
+          </Stack>
+          <Divider color={"gray.300"} />
+          <Stack spacing={2}>
+            <Heading size="sm">Exposure Route</Heading>
+            <Stack direction={"row"} spacing={4}>
+              <FormControl>
+                <FormLabel>System</FormLabel>
+                <Select
+                  placeholder="System"
+                  name="system"
+                  value={
+                    formData?.reaction?.[0].exposureRoute?.coding?.[0].system
+                  }
+                  onChange={(e) => {
+                    const { value } = e.target;
+                    const coding =
+                      formData?.reaction?.[0].exposureRoute?.coding?.[0];
+                    setFormData({
+                      ...formData,
+                      reaction: [
+                        {
+                          ...formData?.reaction?.[0],
+                          manifestation: formData?.reaction?.[0]?.manifestation
+                            ? formData?.reaction?.[0]?.manifestation
+                            : [],
+
+                          exposureRoute: {
                             coding: [
                               {
                                 ...coding,
@@ -755,38 +880,40 @@ const AllergyInputCard = () => {
                               },
                             ],
                           },
-                        ],
-                      },
-                    ],
-                  });
-                }}
-              >
-                <option value="http://snomed.info/sct">
-                  http://snomed.info/sct
-                </option>
-              </Select>
-            </FormControl>
-            <FormControl isRequired>
-              <FormLabel>Code</FormLabel>
-              <InputGroup>
-                <Input
-                  type="text"
-                  placeholder="Code"
-                  name="code"
-                  value={
-                    formData?.reaction?.[0].manifestation?.[0]?.coding?.[0].code
-                  }
-                  onChange={(e) => {
-                    const { value } = e.target;
-                    const coding =
-                      formData?.reaction?.[0].manifestation?.[0]?.coding?.[0];
-                    setFormData({
-                      ...formData,
-                      reaction: [
-                        {
-                          ...formData?.reaction?.[0],
-                          manifestation: [
-                            {
+                        },
+                      ],
+                    });
+                  }}
+                >
+                  <option value="http://snomed.info/sct">
+                    http://snomed.info/sct
+                  </option>
+                </Select>
+              </FormControl>
+              <FormControl>
+                <FormLabel>Code</FormLabel>
+                <InputGroup>
+                  <Input
+                    type="text"
+                    placeholder="Code"
+                    name="code"
+                    value={
+                      formData?.reaction?.[0].exposureRoute?.coding?.[0].code
+                    }
+                    onChange={(e) => {
+                      const { value } = e.target;
+                      const coding =
+                        formData?.reaction?.[0].exposureRoute?.coding?.[0];
+                      setFormData({
+                        ...formData,
+                        reaction: [
+                          {
+                            ...formData?.reaction?.[0],
+                            manifestation: formData?.reaction?.[0]
+                              ?.manifestation
+                              ? formData?.reaction?.[0]?.manifestation
+                              : [],
+                            exposureRoute: {
                               coding: [
                                 {
                                   ...coding,
@@ -794,36 +921,38 @@ const AllergyInputCard = () => {
                                 },
                               ],
                             },
-                          ],
-                        },
-                      ],
-                    });
-                  }}
-                />
-              </InputGroup>
-            </FormControl>
-            <FormControl isRequired>
-              <FormLabel>Display</FormLabel>
-              <InputGroup>
-                <Input
-                  type="text"
-                  placeholder="Display"
-                  name="display"
-                  value={
-                    formData?.reaction?.[0].manifestation?.[0]?.coding?.[0]
-                      .display
-                  }
-                  onChange={(e) => {
-                    const { value } = e.target;
-                    const coding =
-                      formData?.reaction?.[0].manifestation?.[0]?.coding?.[0];
-                    setFormData({
-                      ...formData,
-                      reaction: [
-                        {
-                          ...formData?.reaction?.[0],
-                          manifestation: [
-                            {
+                          },
+                        ],
+                      });
+                    }}
+                  />
+                </InputGroup>
+              </FormControl>
+              <FormControl>
+                <FormLabel>Display</FormLabel>
+                <InputGroup>
+                  <Input
+                    type="text"
+                    placeholder="Display"
+                    name="display"
+                    value={
+                      formData?.reaction?.[0].exposureRoute?.coding?.[0].display
+                    }
+                    onChange={(e) => {
+                      const { value } = e.target;
+                      const coding =
+                        formData?.reaction?.[0].exposureRoute?.coding?.[0];
+                      setFormData({
+                        ...formData,
+                        reaction: [
+                          {
+                            ...formData?.reaction?.[0],
+                            manifestation: formData?.reaction?.[0]
+                              ?.manifestation
+                              ? formData?.reaction?.[0]?.manifestation
+                              : [],
+
+                            exposureRoute: {
                               coding: [
                                 {
                                   ...coding,
@@ -831,219 +960,25 @@ const AllergyInputCard = () => {
                                 },
                               ],
                             },
-                          ],
-                        },
-                      ],
-                    });
-                  }}
-                />
-              </InputGroup>
-            </FormControl>
+                          },
+                        ],
+                      });
+                    }}
+                  />
+                </InputGroup>
+              </FormControl>
+            </Stack>
           </Stack>
-        </Stack>
-        <Divider color={"gray.300"} />
-        <Stack spacing={2}>
-          <Heading size="sm">Exposure Route</Heading>
-          <Stack direction={"row"} spacing={4}>
-            <FormControl>
-              <FormLabel>System</FormLabel>
-              <Select
-                placeholder="System"
-                name="system"
-                value={
-                  formData?.reaction?.[0].exposureRoute?.coding?.[0].system
-                }
-                onChange={(e) => {
-                  const { value } = e.target;
-                  const coding =
-                    formData?.reaction?.[0].exposureRoute?.coding?.[0];
-                  setFormData({
-                    ...formData,
-                    reaction: [
-                      {
-                        ...formData?.reaction?.[0],
-                        manifestation: formData?.reaction?.[0]?.manifestation
-                          ? formData?.reaction?.[0]?.manifestation
-                          : [],
-
-                        exposureRoute: {
-                          coding: [
-                            {
-                              ...coding,
-                              system: value,
-                            },
-                          ],
-                        },
-                      },
-                    ],
-                  });
-                }}
-              >
-                <option value="http://snomed.info/sct">
-                  http://snomed.info/sct
-                </option>
-              </Select>
-            </FormControl>
-            <FormControl>
-              <FormLabel>Code</FormLabel>
-              <InputGroup>
-                <Input
-                  type="text"
-                  placeholder="Code"
-                  name="code"
-                  value={
-                    formData?.reaction?.[0].exposureRoute?.coding?.[0].code
-                  }
-                  onChange={(e) => {
-                    const { value } = e.target;
-                    const coding =
-                      formData?.reaction?.[0].exposureRoute?.coding?.[0];
-                    setFormData({
-                      ...formData,
-                      reaction: [
-                        {
-                          ...formData?.reaction?.[0],
-                          manifestation: formData?.reaction?.[0]?.manifestation
-                            ? formData?.reaction?.[0]?.manifestation
-                            : [],
-                          exposureRoute: {
-                            coding: [
-                              {
-                                ...coding,
-                                code: value,
-                              },
-                            ],
-                          },
-                        },
-                      ],
-                    });
-                  }}
-                />
-              </InputGroup>
-            </FormControl>
-            <FormControl>
-              <FormLabel>Display</FormLabel>
-              <InputGroup>
-                <Input
-                  type="text"
-                  placeholder="Display"
-                  name="display"
-                  value={
-                    formData?.reaction?.[0].exposureRoute?.coding?.[0].display
-                  }
-                  onChange={(e) => {
-                    const { value } = e.target;
-                    const coding =
-                      formData?.reaction?.[0].exposureRoute?.coding?.[0];
-                    setFormData({
-                      ...formData,
-                      reaction: [
-                        {
-                          ...formData?.reaction?.[0],
-                          manifestation: formData?.reaction?.[0]?.manifestation
-                            ? formData?.reaction?.[0]?.manifestation
-                            : [],
-
-                          exposureRoute: {
-                            coding: [
-                              {
-                                ...coding,
-                                display: value,
-                              },
-                            ],
-                          },
-                        },
-                      ],
-                    });
-                  }}
-                />
-              </InputGroup>
-            </FormControl>
-          </Stack>
-        </Stack>
-        <Divider color={"gray.300"} />
-        <Stack spacing={2}>
-          <Heading size="sm">Substance</Heading>
-          <Stack direction={"row"} spacing={4}>
-            <FormControl>
-              <FormLabel>System</FormLabel>
-              <Select
-                placeholder="System"
-                name="system"
-                value={formData?.reaction?.[0].substance?.coding?.[0].system}
-                onChange={(e) => {
-                  const { value } = e.target;
-                  const coding = formData?.reaction?.[0].substance?.coding?.[0];
-                  setFormData({
-                    ...formData,
-                    reaction: [
-                      {
-                        ...formData?.reaction?.[0],
-                        manifestation: formData?.reaction?.[0]?.manifestation
-                          ? formData?.reaction?.[0]?.manifestation
-                          : [],
-
-                        substance: {
-                          coding: [
-                            {
-                              ...coding,
-                              system: value,
-                            },
-                          ],
-                        },
-                      },
-                    ],
-                  });
-                }}
-              >
-                <option value="http://www.nlm.nih.gov/research/umls/rxnorm">
-                  http://www.nlm.nih.gov/research/umls/rxnorm
-                </option>
-              </Select>
-            </FormControl>
-            <FormControl>
-              <FormLabel>Code</FormLabel>
-              <InputGroup>
-                <Input
-                  type="text"
-                  placeholder="Code"
-                  name="code"
-                  value={formData?.reaction?.[0].substance?.coding?.[0].code}
-                  onChange={(e) => {
-                    const { value } = e.target;
-                    const coding =
-                      formData?.reaction?.[0].substance?.coding?.[0];
-                    setFormData({
-                      ...formData,
-                      reaction: [
-                        {
-                          ...formData?.reaction?.[0],
-                          manifestation: formData?.reaction?.[0]?.manifestation
-                            ? formData?.reaction?.[0]?.manifestation
-                            : [],
-                          substance: {
-                            coding: [
-                              {
-                                ...coding,
-                                code: value,
-                              },
-                            ],
-                          },
-                        },
-                      ],
-                    });
-                  }}
-                />
-              </InputGroup>
-            </FormControl>
-            <FormControl>
-              <FormLabel>Display</FormLabel>
-              <InputGroup>
-                <Input
-                  type="text"
-                  placeholder="Display"
-                  name="display"
-                  value={formData?.reaction?.[0].substance?.coding?.[0].display}
+          <Divider color={"gray.300"} />
+          <Stack spacing={2}>
+            <Heading size="sm">Substance</Heading>
+            <Stack direction={"row"} spacing={4}>
+              <FormControl>
+                <FormLabel>System</FormLabel>
+                <Select
+                  placeholder="System"
+                  name="system"
+                  value={formData?.reaction?.[0].substance?.coding?.[0].system}
                   onChange={(e) => {
                     const { value } = e.target;
                     const coding =
@@ -1061,7 +996,7 @@ const AllergyInputCard = () => {
                             coding: [
                               {
                                 ...coding,
-                                display: value,
+                                system: value,
                               },
                             ],
                           },
@@ -1069,22 +1004,131 @@ const AllergyInputCard = () => {
                       ],
                     });
                   }}
-                />
-              </InputGroup>
-            </FormControl>
+                >
+                  <option value="http://www.nlm.nih.gov/research/umls/rxnorm">
+                    http://www.nlm.nih.gov/research/umls/rxnorm
+                  </option>
+                </Select>
+              </FormControl>
+              <FormControl>
+                <FormLabel>Code</FormLabel>
+                <InputGroup>
+                  <Input
+                    type="text"
+                    placeholder="Code"
+                    name="code"
+                    value={formData?.reaction?.[0].substance?.coding?.[0].code}
+                    onChange={(e) => {
+                      const { value } = e.target;
+                      const coding =
+                        formData?.reaction?.[0].substance?.coding?.[0];
+                      setFormData({
+                        ...formData,
+                        reaction: [
+                          {
+                            ...formData?.reaction?.[0],
+                            manifestation: formData?.reaction?.[0]
+                              ?.manifestation
+                              ? formData?.reaction?.[0]?.manifestation
+                              : [],
+                            substance: {
+                              coding: [
+                                {
+                                  ...coding,
+                                  code: value,
+                                },
+                              ],
+                            },
+                          },
+                        ],
+                      });
+                    }}
+                  />
+                </InputGroup>
+              </FormControl>
+              <FormControl>
+                <FormLabel>Display</FormLabel>
+                <InputGroup>
+                  <Input
+                    type="text"
+                    placeholder="Display"
+                    name="display"
+                    value={
+                      formData?.reaction?.[0].substance?.coding?.[0].display
+                    }
+                    onChange={(e) => {
+                      const { value } = e.target;
+                      const coding =
+                        formData?.reaction?.[0].substance?.coding?.[0];
+                      setFormData({
+                        ...formData,
+                        reaction: [
+                          {
+                            ...formData?.reaction?.[0],
+                            manifestation: formData?.reaction?.[0]
+                              ?.manifestation
+                              ? formData?.reaction?.[0]?.manifestation
+                              : [],
+
+                            substance: {
+                              coding: [
+                                {
+                                  ...coding,
+                                  display: value,
+                                },
+                              ],
+                            },
+                          },
+                        ],
+                      });
+                    }}
+                  />
+                </InputGroup>
+              </FormControl>
+            </Stack>
           </Stack>
-        </Stack>
-        <Divider color={"gray.300"} />
-        <Stack spacing={2}>
-          <Heading size="sm">Description</Heading>
-          <Stack direction={"row"} spacing={4}>
-            <FormControl>
-              <InputGroup>
-                <Input
-                  type="text"
-                  placeholder="Description"
-                  name="description"
-                  value={formData?.reaction?.[0].description}
+          <Divider color={"gray.300"} />
+          <Stack spacing={2}>
+            <Heading size="sm">Description</Heading>
+            <Stack direction={"row"} spacing={4}>
+              <FormControl>
+                <InputGroup>
+                  <Input
+                    type="text"
+                    placeholder="Description"
+                    name="description"
+                    value={formData?.reaction?.[0].description}
+                    onChange={(e) => {
+                      const { value } = e.target;
+                      setFormData({
+                        ...formData,
+                        reaction: [
+                          {
+                            ...formData?.reaction?.[0],
+                            manifestation: formData?.reaction?.[0]
+                              ?.manifestation
+                              ? formData?.reaction?.[0]?.manifestation
+                              : [],
+
+                            description: value,
+                          },
+                        ],
+                      });
+                    }}
+                  />
+                </InputGroup>
+              </FormControl>
+            </Stack>
+          </Stack>
+          <Divider color={"gray.300"} />
+          <Stack spacing={2}>
+            <Heading size="sm">Severity</Heading>
+            <Stack direction={"row"} spacing={4}>
+              <FormControl>
+                <Select
+                  placeholder="Severity"
+                  name="severity"
+                  value={formData?.reaction?.[0]?.severity}
                   onChange={(e) => {
                     const { value } = e.target;
                     setFormData({
@@ -1096,51 +1140,24 @@ const AllergyInputCard = () => {
                             ? formData?.reaction?.[0]?.manifestation
                             : [],
 
-                          description: value,
+                          severity: value as SeverityLevel,
                         },
                       ],
                     });
                   }}
-                />
-              </InputGroup>
-            </FormControl>
-          </Stack>
-        </Stack>
-        <Divider color={"gray.300"} />
-        <Stack spacing={2}>
-          <Heading size="sm">Severity</Heading>
-          <Stack direction={"row"} spacing={4}>
-            <FormControl>
-              <Select
-                placeholder="Severity"
-                name="severity"
-                value={formData?.reaction?.[0]?.severity}
-                onChange={(e) => {
-                  const { value } = e.target;
-                  setFormData({
-                    ...formData,
-                    reaction: [
-                      {
-                        ...formData?.reaction?.[0],
-                        manifestation: formData?.reaction?.[0]?.manifestation
-                          ? formData?.reaction?.[0]?.manifestation
-                          : [],
-
-                        severity: value as SeverityLevel,
-                      },
-                    ],
-                  });
-                }}
-              >
-                <option value={SeverityLevel.MILD}>{SeverityLevel.MILD}</option>
-                <option value={SeverityLevel.MODERATE}>
-                  {SeverityLevel.MODERATE}
-                </option>
-                <option value={SeverityLevel.SEVERE}>
-                  {SeverityLevel.SEVERE}
-                </option>
-              </Select>
-            </FormControl>
+                >
+                  <option value={SeverityLevel.MILD}>
+                    {SeverityLevel.MILD}
+                  </option>
+                  <option value={SeverityLevel.MODERATE}>
+                    {SeverityLevel.MODERATE}
+                  </option>
+                  <option value={SeverityLevel.SEVERE}>
+                    {SeverityLevel.SEVERE}
+                  </option>
+                </Select>
+              </FormControl>
+            </Stack>
           </Stack>
         </Stack>
       </CardBody>
@@ -1172,6 +1189,37 @@ const AllergyInputCard = () => {
           </FormControl>
         </CardBody>
       </CardHeader>
+    </Card>
+  );
+
+  const AdditionalNote = (
+    <Card>
+      <CardHeader>
+        <Heading size="sm" textTransform={"uppercase"}>
+          Additional Note
+        </Heading>
+      </CardHeader>
+      <CardBody>
+        <Stack direction={"row"} spacing={4}>
+          <FormControl>
+            <InputGroup>
+              <Input
+                type="text"
+                placeholder="Additional doctor note"
+                name="additionalNote"
+                value={formData?.additionalNote}
+                onChange={(e) => {
+                  const { value } = e.target;
+                  setFormData({
+                    ...formData,
+                    additionalNote: value,
+                  });
+                }}
+              />
+            </InputGroup>
+          </FormControl>
+        </Stack>
+      </CardBody>
     </Card>
   );
 
@@ -1215,10 +1263,6 @@ const AllergyInputCard = () => {
 
   const navigate = useNavigate();
 
-  const handleToAllergiesList = () => {
-    navigate("/allergies");
-  };
-
   return (
     <div className="w-[70%]">
       <Form
@@ -1241,6 +1285,7 @@ const AllergyInputCard = () => {
           {Code}
           {Reaction}
           {RecordedDate}
+          {AdditionalNote}
           <Stack direction={"row"} spacing={4} width={"100%"}>
             <div className="basis-full">{Category}</div>
             <div className="basis-full">{Criticality}</div>
@@ -1266,7 +1311,7 @@ const AllergyInputCard = () => {
         <ModalOverlay />
         <ModalContent>
           <ModalHeader textAlign={"center"}>
-            Observations successfully added!
+            Allergy successfully added!
           </ModalHeader>
           <ModalBody className="flex flex-col justify-center items-center">
             <CBsPatchCheckFill color={"green.300"} size={150} />
@@ -1281,9 +1326,6 @@ const AllergyInputCard = () => {
           <ModalFooter>
             <Button variant="ghost" mr={3} onClick={handleCloseModal}>
               Close
-            </Button>
-            <Button variant="solid" onClick={handleToAllergiesList}>
-              Go to Allergies
             </Button>
           </ModalFooter>
         </ModalContent>

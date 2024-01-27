@@ -1,4 +1,4 @@
-import { Heading } from "@chakra-ui/react";
+import { Heading, Skeleton, Stack } from "@chakra-ui/react";
 import MedicationCard from "../../components/MedicationCard";
 import { useGetMedicationQuery } from "../../api/medication";
 import { useEffect } from "react";
@@ -37,10 +37,22 @@ const Medications = () => {
 
   return (
     <div className="flex flex-col items-center justify-start p-6 w-full">
-      <Heading color="yellow.200">Medication</Heading>
+      <Heading color="yellow.200" marginBottom={8}>
+        Medication
+      </Heading>
       {renderComponent({
         loading: {
           isLoading: isLoading,
+          style: {
+            width: "80%",
+          },
+          component: (
+            <Stack width={"100%"} spacing={4}>
+              <Skeleton height="240px" />
+              <Skeleton height="240px" />
+              <Skeleton height="240px" />
+            </Stack>
+          ),
         },
         error: {
           isError: isError,

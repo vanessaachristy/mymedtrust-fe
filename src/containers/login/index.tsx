@@ -92,7 +92,7 @@ const Login = () => {
 
   useEffect(() => {
     if (loginMutation.isSuccess && !loginMutation.isError) {
-      navigate("/");
+      navigate(PATH.Home);
     }
   }, [loginMutation.isSuccess, loginMutation.isError]);
 

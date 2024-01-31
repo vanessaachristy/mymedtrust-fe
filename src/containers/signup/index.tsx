@@ -152,7 +152,7 @@ const SignUp = () => {
     },
     onSuccess: () => {
       setTimeout(() => {
-        navigate("/login");
+        navigate(PATH.Login);
       }, 2000);
     },
   });

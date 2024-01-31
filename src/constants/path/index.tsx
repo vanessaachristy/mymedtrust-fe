@@ -13,7 +13,8 @@ import { MdNoFood } from "react-icons/md";
 import { PiFileMagnifyingGlassFill } from "react-icons/pi";
 
 export const enum PATH {
-  Home = "/",
+  Intro = "/",
+  Home = "/home",
   Login = "/login",
   SignUp = "/signup",
   Profile = "/profile",

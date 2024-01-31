@@ -29,6 +29,7 @@ import { customizedTheme } from "./theme";
 import Patients from "./containers/patients";
 import AllRecords from "./containers/all-records";
 import Doctors from "./containers/doctors";
+import Intro from "./containers/intro";
 
 function App() {
   const queryClient = new QueryClient();
@@ -59,7 +60,7 @@ function App() {
     }, [authenticated]);
 
     if (!authenticated) {
-      return <Navigate to={"/login"} replace />;
+      return <Navigate to={PATH.Login} replace />;
     }
     return (
       <div className="flex bg-primaryBlue-500 h-screen">
@@ -77,6 +78,10 @@ function App() {
     {
       path: PATH.SignUp,
       element: <SignUp />,
+    },
+    {
+      path: PATH.Intro,
+      element: <Intro />,
     },
     {
       path: PATH.Home,

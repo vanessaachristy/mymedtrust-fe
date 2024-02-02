@@ -6,6 +6,12 @@ const axiosWithCredentials = axios.create({
     baseURL: 'http://localhost:3000',
 });
 
+
+export const axiosWithCredentials2 = axios.create({
+    baseURL: 'http://localhost:3002',
+});
+
+
 // Add an interceptor to attach cookies to every request
 axiosWithCredentials.interceptors.request.use(
     (config) => {

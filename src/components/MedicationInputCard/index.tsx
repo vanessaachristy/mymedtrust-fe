@@ -28,7 +28,6 @@ import {
   Select,
   Spinner,
   Stack,
-  StackDivider,
   Text,
   chakra,
 } from "@chakra-ui/react";
@@ -901,7 +900,7 @@ const MedicationInputCard = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="w-[70%]">
+    <div className="w-full">
       <Form
         onSubmit={handleSubmitForm}
         className="w-full flex flex-col justify-center"

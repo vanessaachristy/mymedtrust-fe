@@ -45,7 +45,17 @@ import {
 import { BsPatchCheckFill } from "react-icons/bs";
 import moment from "moment";
 
-const MedicationInputCard = () => {
+export type MedicationData = Medication & {
+  account: string;
+  doctor: string;
+  patient: string;
+  additionalNote: string;
+};
+
+type MedicationInputCardProps = {
+  data?: MedicationData;
+};
+const MedicationInputCard = ({ data }: MedicationInputCardProps) => {
   const { user, setUser } = useUserContext();
   const { data: userData, refetch: fetchUserData } = useFetchUserDetailQuery();
   useEffect(() => {
@@ -136,7 +146,14 @@ const MedicationInputCard = () => {
       doctor: string;
       additionalNote: string;
     }
-  >(emptyFormData);
+  >(data ?? emptyFormData);
+
+  useEffect(() => {
+    console.log(data, "parsed data");
+    if (data) {
+      setFormData(data);
+    }
+  }, [data]);
 
   const {
     data: patientDetails,
@@ -269,7 +286,7 @@ const MedicationInputCard = () => {
               </option>
             </Select>
           </FormControl>
-          <FormControl isRequired>
+          <FormControl>
             <FormLabel>Code</FormLabel>
             <InputGroup>
               <Input
@@ -713,7 +730,7 @@ const MedicationInputCard = () => {
               </option>
             </Select>
           </FormControl>
-          <FormControl isRequired>
+          <FormControl>
             <FormLabel>Code</FormLabel>
             <InputGroup>
               <Input

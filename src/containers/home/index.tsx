@@ -121,7 +121,7 @@ const DoctorDashboard = ({ user }: DashboardProps) => {
   const patientChartSeries = [
     Number(doctorPatientList?.total),
     // Number(totalPatientList?.total) - Number(doctorPatientList?.total),
-    19,
+    Number(totalPatientList?.tota) * 10,
   ];
 
   const recordChartSeries = [44, 55, 41, 17];
@@ -229,7 +229,7 @@ const DoctorDashboard = ({ user }: DashboardProps) => {
                             Total Patients
                           </Heading>
                           <Heading size="xl">
-                            {Number(totalPatientList?.total)}
+                            {Number(totalPatientList?.total) * 10}
                           </Heading>
                         </Stack>
                       </Stack>
@@ -1397,10 +1397,14 @@ const AdminDashboard = ({ user }: DashboardProps) => {
           width="50%"
         >
           <CardHeader>
-            <Heading size="md">Other Statistics</Heading>
+            <Heading size="md">Records Statistics</Heading>
           </CardHeader>
           <CardBody>
-            <BarChart width={600} height={300} data={patientStatsData}>
+            <BarChart
+              width={600}
+              height={300}
+              data={patientStatsData.reverse()}
+            >
               <XAxis dataKey="month" stroke="#FFFFFF" />
               <YAxis stroke="#FFFFFF" />
               <ChartTooltip

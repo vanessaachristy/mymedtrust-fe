@@ -147,6 +147,7 @@ export const ADMIN_NAV: NavItems[] = [
   ALL_NAVS[PATH.Patient],
   ALL_NAVS[PATH.Doctors],
   ALL_NAVS[PATH.AllRecords],
+  ALL_NAVS[PATH.Whitelist],
 ];
 
 export const PROFILE_NAV: NavItems[] = [ALL_NAVS[PATH.Profile]];

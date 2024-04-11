@@ -45,6 +45,7 @@ import {
 } from "../../api/user";
 import moment from "moment";
 import { BsPatchCheckFill } from "react-icons/bs";
+import { PATH } from "constants/path";
 
 const ConditionInputCard = () => {
   const { user, setUser } = useUserContext();
@@ -299,6 +300,13 @@ const ConditionInputCard = () => {
     additionalNote: "",
   });
 
+  const {
+    data: patientDetails,
+    isLoading: isPatientDetailsLoading,
+    error: isPatientDetailsError,
+    refetch: fetchPatientDetails,
+  } = useFetchPatientDetailsQuery(formData?.patient);
+
   const Patient = (
     <FormControl isRequired>
       <Card>
@@ -323,17 +331,24 @@ const ConditionInputCard = () => {
               }}
             />
           </InputGroup>
+          {isPatientDetailsLoading && (
+            <div className="p-6">
+              <Spinner />
+              Fetching user details...
+            </div>
+          )}
+          {isPatientDetailsError && (
+            <Alert status="error">
+              {(isPatientDetailsError as any)?.toString()}
+            </Alert>
+          )}
+          {patientDetails?.primaryInfo?.name && (
+            <Alert status="success">{patientDetails?.primaryInfo?.name}</Alert>
+          )}
         </CardBody>
       </Card>
     </FormControl>
   );
-
-  const {
-    data: patientDetails,
-    isLoading: isPatientDetailsLoading,
-    error: isPatientDetailsError,
-    refetch: fetchPatientDetails,
-  } = useFetchPatientDetailsQuery(formData?.patient);
 
   useEffect(() => {
     // Trigger a refetch when formData?.patient changes and is valid
@@ -1291,6 +1306,17 @@ const ConditionInputCard = () => {
             <ModalFooter>
               <Button variant="ghost" mr={3} onClick={handleCloseModal}>
                 Close
+              </Button>
+            </ModalFooter>
+            <ModalFooter>
+              <Button
+                variant="ghost"
+                mr={3}
+                onClick={() => {
+                  navigate(PATH.Home);
+                }}
+              >
+                Go to Home
               </Button>
             </ModalFooter>
           </ModalContent>

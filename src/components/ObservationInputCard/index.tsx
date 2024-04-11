@@ -190,6 +190,13 @@ const ObservationInputCard = () => {
     additionalNote: "",
   });
 
+  const {
+    data: patientDetails,
+    isLoading: isPatientDetailsLoading,
+    error: isPatientDetailsError,
+    refetch: fetchPatientDetails,
+  } = useFetchPatientDetailsQuery(formData?.patient);
+
   const Patient = (
     <FormControl isRequired>
       <Card>
@@ -214,17 +221,24 @@ const ObservationInputCard = () => {
               }}
             />
           </InputGroup>
+          {isPatientDetailsLoading && (
+            <div className="p-6">
+              <Spinner />
+              Fetching user details...
+            </div>
+          )}
+          {isPatientDetailsError && (
+            <Alert status="error">
+              {(isPatientDetailsError as any)?.toString()}
+            </Alert>
+          )}
+          {patientDetails?.primaryInfo?.name && (
+            <Alert status="success">{patientDetails?.primaryInfo?.name}</Alert>
+          )}
         </CardBody>
       </Card>
     </FormControl>
   );
-
-  const {
-    data: patientDetails,
-    isLoading: isPatientDetailsLoading,
-    error: isPatientDetailsError,
-    refetch: fetchPatientDetails,
-  } = useFetchPatientDetailsQuery(formData?.patient);
 
   useEffect(() => {
     // Trigger a refetch when formData?.patient changes and is valid
@@ -817,8 +831,8 @@ const ObservationInputCard = () => {
 
   const navigate = useNavigate();
 
-  const handleToObservationList = () => {
-    navigate("/observations");
+  const handleToHome = () => {
+    navigate("/");
   };
 
   return (
@@ -880,8 +894,8 @@ const ObservationInputCard = () => {
             <Button variant="ghost" mr={3} onClick={handleCloseModal}>
               Close
             </Button>
-            <Button variant="solid" onClick={handleToObservationList}>
-              Go to Observations
+            <Button variant="solid" onClick={handleToHome}>
+              Go to Home
             </Button>
           </ModalFooter>
         </ModalContent>

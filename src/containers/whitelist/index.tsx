@@ -24,7 +24,8 @@ const Whitelist = () => {
   const CFaUserAlt = chakra(FaUserAlt);
   const CFaUserMd = chakra(FaUserMd);
   const [formData, setFormData] = useState({
-    account: "0x8Dd02DF718aC13B7502AC421a28265aC6A9631fF",
+    // account: "0x8Dd02DF718aC13B7502AC421a28265aC6A9631fF",
+    account: user?.user?.address,
     patient: "",
     doctor: "",
   });
@@ -45,11 +46,19 @@ const Whitelist = () => {
         .post("/doctor/whitelist", data)
         .then(function (response) {
           setUnauthorizedMessage("");
+          setFormData({
+            ...formData,
+            patient: "",
+            doctor: "",
+          });
         })
         .catch(function (error) {
-          if (error?.response?.status === 401) {
+          if (
+            error?.response?.status === 401 ||
+            error?.response?.status === 400
+          ) {
             console.log("error", error?.response);
-            setUnauthorizedMessage(error?.response?.data?.message);
+            setUnauthorizedMessage(error?.response?.data?.error);
           } else {
             setUnauthorizedMessage("Something is wrong!");
           }
@@ -122,13 +131,13 @@ const Whitelist = () => {
           </Button>
         </Stack>
         {whitelistMutation.isError && (
-          <Alert status="error">
+          <Alert status="error" width={"80%"}>
             <AlertIcon />
             <AlertDescription>{unauthorizedMessage}</AlertDescription>
           </Alert>
         )}
         {whitelistMutation.isSuccess && !whitelistMutation.isError && (
-          <Alert status="success">
+          <Alert status="success" width="80%">
             <AlertIcon />
             <AlertTitle>Whitelist successful!</AlertTitle>
           </Alert>

@@ -220,7 +220,7 @@ const Patients = () => {
   return (
     <div className="flex flex-col items-center justify-start p-6 w-full">
       <Heading color="yellow.200" marginBottom={"24px"}>
-        Your Patients
+        {user?.userType === UserType.ADMIN ? "All Patients" : "Your Patients"}
       </Heading>
       <SearchBar
         placeholder="Search patient name / address / email / IC"

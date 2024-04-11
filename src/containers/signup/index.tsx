@@ -21,6 +21,8 @@ import {
   AlertIcon,
   AlertTitle,
   Image,
+  Text,
+  Heading,
 } from "@chakra-ui/react";
 import {
   FaUserAlt,
@@ -152,7 +154,7 @@ const SignUp = () => {
     },
     onSuccess: () => {
       setTimeout(() => {
-        navigate(PATH.Login);
+        navigate(PATH.Home);
       }, 2000);
     },
   });
@@ -353,14 +355,19 @@ const SignUp = () => {
     </>
   );
 
+  const passwordLenError =
+    formData?.password?.length > 0 && formData?.password?.length < 8;
+
   return (
     <div className="flex justify-center items-center text-white bg-primaryBlue-500">
       <div className="w-[60vw] h-auto flex flex-col justify-center items-center px-12 space-y-12">
-        <div className="bg-primaryBlue-300 p-12 w-screen">
+        <div className="bg-primaryBlue-300 p-12 py-6 w-screen">
           <Image src={MyMedtraceLogo} height={"70px"} />
         </div>
         <div className="h-[80%] flex flex-col justify-center items-center w-full mb-24">
-          <h3>Start storing your health record securely!</h3>
+          <Heading size="lg" paddingBottom={2}>
+            Start storing your health record securely!
+          </Heading>
           <div>
             Already have an account?{" "}
             <Link color="yellow.100" href={PATH.Login}>
@@ -410,7 +417,7 @@ const SignUp = () => {
                   />
                 </InputGroup>
               </FormControl>
-              <FormControl isRequired>
+              <FormControl isRequired isInvalid={passwordLenError}>
                 <InputGroup>
                   <InputLeftElement
                     pointerEvents="none"
@@ -436,6 +443,9 @@ const SignUp = () => {
                     </Button>
                   </InputRightElement>
                 </InputGroup>
+                <FormErrorMessage>
+                  {"Password is too weak. Must be at least 8 characters."}
+                </FormErrorMessage>
               </FormControl>
               <FormControl isRequired isInvalid={passwordError !== ""}>
                 <InputGroup>

@@ -88,8 +88,8 @@ export const useFetchPatientDetailsQuery = (patientAddress: string) => {
         {
             select: transformPatientDetails,
             enabled: false,
-            onError: (error) => {
-                return error as any;
+            onError: (error: any) => {
+                return error?.response?.data?.error;
             }
         },
 
